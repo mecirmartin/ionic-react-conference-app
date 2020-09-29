@@ -138,6 +138,9 @@ const IonicApp: React.FC<IonicAppProps> = ({
         rendererID: 1,
       }
     );
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
+      e.target
+    );
     highlight(e.target);
   };
   return schedule.groups.length === 0 ? (
