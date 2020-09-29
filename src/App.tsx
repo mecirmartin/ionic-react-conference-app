@@ -116,10 +116,10 @@ const IonicApp: React.FC<IonicAppProps> = ({
     const styles = getComputedStyle(castedElement);
 
     const margin = {
-      top: Math.max(+styles.marginTop!, 0),
-      right: Math.max(+styles.marginRight!, 0),
-      bottom: Math.max(+styles.marginBottom!, 0),
-      left: Math.max(+styles.marginLeft!, 0),
+      top: Math.max(parseInt(styles.marginTop!), 0),
+      right: Math.max(parseInt(styles.marginRight!), 0),
+      bottom: Math.max(parseInt(styles.marginBottom!), 0),
+      left: Math.max(parseInt(styles.marginLeft!), 0),
     };
 
     const rect: any = {
