@@ -40,6 +40,7 @@ import Tutorial from "./pages/Tutorial";
 import HomeOrTutorial from "./components/HomeOrTutorial";
 import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
+import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
 
 const App: React.FC = () => {
   return (
@@ -76,76 +77,18 @@ const IonicApp: React.FC<IonicAppProps> = ({
     loadConfData();
     // eslint-disable-next-line
   }, []);
+
   const dom = {
     area: document.createElement("div"),
     x: document.createElement("div"),
     y: document.createElement("div"),
   };
 
-  Object.assign(dom.area.style, {
-    position: "fixed",
-    backgroundColor: "rgba(0, 136, 204, 0.2)",
-    zIndex: "2147483647",
-    pointerEvents: "none",
-  });
+  Object.assign(dom.area.style, areaStyle);
 
-  Object.assign(dom.x.style, {
-    position: "fixed",
-    borderStyle: "dashed",
-    borderColor: "rgb(0, 136, 204)",
-    borderWidth: "1px 0",
-    zIndex: "2147483647",
-    left: "0",
-    width: "100vw",
-    pointerEvents: "none",
-  });
+  Object.assign(dom.x.style, xStyle);
 
-  Object.assign(dom.y.style, {
-    position: "fixed",
-    borderStyle: "dashed",
-    borderColor: "rgb(0, 136, 204)",
-    borderWidth: "0 1px",
-    zIndex: "2147483647",
-    top: "0",
-    height: "100vh",
-    pointerEvents: "none",
-  });
-
-  function getOffset(element: EventTarget) {
-    const castedElement = element as HTMLElement;
-    const styles = getComputedStyle(castedElement);
-
-    const margin = {
-      top: Math.max(parseInt(styles.marginTop!), 0),
-      right: Math.max(parseInt(styles.marginRight!), 0),
-      bottom: Math.max(parseInt(styles.marginBottom!), 0),
-      left: Math.max(parseInt(styles.marginLeft!), 0),
-    };
-
-    const rect: any = {
-      width: castedElement.offsetWidth + margin.right + margin.left,
-      height: castedElement.offsetHeight + margin.top + margin.bottom,
-      top: castedElement.offsetTop - margin.top,
-      left: castedElement.offsetLeft - margin.left,
-    };
-
-    let parent: any = castedElement;
-    while ((parent = parent.offsetParent)) {
-      rect.top += parent.offsetTop;
-      rect.left += parent.offsetLeft;
-    }
-
-    parent = castedElement;
-    while ((parent = parent.parentElement)) {
-      rect.top -= parent.scrollTop;
-      rect.left -= parent.scrollLeft;
-    }
-
-    rect.right = rect.left + rect.width;
-    rect.bottom = rect.top + rect.height;
-
-    return rect;
-  }
+  Object.assign(dom.y.style, yStyle);
 
   function highlight(element: EventTarget) {
     if (!element) {
@@ -166,7 +109,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
 
     Object.assign(dom.x.style, {
       top: box.top + "px",
-      height: box.height - 2 + "px",
+      height: box.height + "px",
     });
     document.body.append(dom.x);
 
@@ -178,7 +121,6 @@ const IonicApp: React.FC<IonicAppProps> = ({
   }
 
   const handleMouseOver = (e: React.MouseEvent) => {
-    console.log(e.target);
     //window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole({id: 37, rendererID:1})T
     highlight(e.target);
   };
