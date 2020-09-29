@@ -91,8 +91,6 @@ const IonicApp: React.FC<IonicAppProps> = ({
     // eslint-disable-next-line
   }, []);
 
-  const [open, setOpen] = useState(false);
-
   const dom = {
     area: document.createElement("div"),
     x: document.createElement("div"),
@@ -130,7 +128,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
 
     Object.assign(dom.y.style, {
       left: box.left + "px",
-      width: box.width - 2 + "px",
+      width: box.width + "px",
     });
     document.body.append(dom.y);
   }
@@ -169,21 +167,14 @@ const IonicApp: React.FC<IonicAppProps> = ({
           {
             <div
               style={{
-                maxBlockSize: 50,
+                maxBlockSize: 650,
                 display: "flex",
                 flexDirection: "column",
               }}
             >
-              {/* <IonButton
-                size="small"
-                style={{ display: "inline" }}
-                onClick={() => setOpen(!open)}
-              >{`${open ? "Close" : "Open"} editor`}</IonButton> */}
-              {open ? (
-                <LiveProvider code={code}>
-                  <LiveEditor />
-                </LiveProvider>
-              ) : null}{" "}
+              <LiveProvider code={code}>
+                <LiveEditor />
+              </LiveProvider>
             </div>
           }{" "}
           <Menu />
@@ -213,6 +204,10 @@ const IonicApp: React.FC<IonicAppProps> = ({
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
+      <div className={styles.TabBar}></div>
+      <div className={styles.DevTools}>
+        <DevTools window={window} tabID={tabID} />
+      </div>
     </IonApp>
   );
 };
