@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, IonSplitPane } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -41,6 +41,10 @@ import HomeOrTutorial from "./components/HomeOrTutorial";
 import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
 import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
+import DevTools from "./devtools/devtools";
+// @ts-ignore
+import styles from './devtools/devtoolsStyles.css'
+
 
 const App: React.FC = () => {
   return (
@@ -62,7 +66,7 @@ interface DispatchProps {
   setUsername: typeof setUsername;
 }
 
-interface IonicAppProps extends StateProps, DispatchProps {}
+interface IonicAppProps extends StateProps, DispatchProps { }
 
 const IonicApp: React.FC<IonicAppProps> = ({
   darkMode,
@@ -124,44 +128,80 @@ const IonicApp: React.FC<IonicAppProps> = ({
     //window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole({id: 37, rendererID:1})T
     highlight(e.target);
   };
+
+  const defaultTabID = 'components';
+
+  const [tabID, setTabID] = useState(defaultTabID);
+
   return schedule.groups.length === 0 ? (
     <div></div>
   ) : (
-    <IonApp
-      onMouseOver={handleMouseOver}
-      className={`${darkMode ? "dark-theme" : ""}`}
-    >
-      <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <Menu />
-          <IonRouterOutlet id="main">
-            {/*
+      <IonApp
+        onMouseOver={handleMouseOver}
+        className={`${darkMode ? "dark-theme" : ""}`}
+      >
+        <IonReactRouter>
+          <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              {/*
                 We use IonRoute here to keep the tabs state intact,
                 which makes transitions between tabs and non tab pages smooth
                 */}
-            <Route path="/tabs" render={() => <MainTabs />} />
-            <Route path="/account" component={Account} />
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/support" component={Support} />
-            <Route path="/tutorial" component={Tutorial} />
-            <Route
-              path="/logout"
-              render={() => {
-                return (
-                  <RedirectToLogin
-                    setIsLoggedIn={setIsLoggedIn}
-                    setUsername={setUsername}
-                  />
-                );
-              }}
-            />
-            <Route path="/" component={HomeOrTutorial} exact />
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
-    </IonApp>
-  );
+              <Route path="/tabs" render={() => <MainTabs />} />
+              <Route path="/account" component={Account} />
+              <Route path="/login" component={Login} />
+              <Route path="/signup" component={Signup} />
+              <Route path="/support" component={Support} />
+              <Route path="/tutorial" component={Tutorial} />
+              <Route
+                path="/logout"
+                render={() => {
+                  return (
+                    <RedirectToLogin
+                      setIsLoggedIn={setIsLoggedIn}
+                      setUsername={setUsername}
+                    />
+                  );
+                }}
+              />
+              <Route path="/" component={HomeOrTutorial} exact />
+            </IonRouterOutlet>
+          </IonSplitPane>
+        </IonReactRouter>
+        <div className={styles.TabBar}>
+          <div
+            className={tabID === 'components' ? styles.TabActive : styles.Tab}
+            onClick={() => setTabID('components')}
+          >
+            <span
+              className={styles.ReactIcon}
+              role="img"
+              aria-label="React Components tab button"
+            >
+              ⚛️
+              </span>
+              Components
+            </div>
+          <div
+            className={tabID === 'profiler' ? styles.TabActive : styles.Tab}
+            onClick={() => setTabID('profiler')}
+          >
+            <span
+              className={styles.ReactIcon}
+              role="img"
+              aria-label="React Profiler tab button"
+            >
+              ⚛️
+              </span>
+              Profiler
+            </div>
+        </div>
+        <div className={styles.DevTools}>
+          <DevTools window={window} tabID={tabID} />
+        </div>
+      </IonApp>
+    );
 };
 
 export default App;
