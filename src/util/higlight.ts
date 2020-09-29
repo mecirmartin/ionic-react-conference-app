@@ -27,7 +27,7 @@ export const yStyle = {
   pointerEvents: "none",
 };
 
-export function getOffset(element: EventTarget) {
+export const getOffset = (element: EventTarget) => {
   const castedElement = element as HTMLElement;
   const styles = getComputedStyle(castedElement);
 
@@ -61,4 +61,4 @@ export function getOffset(element: EventTarget) {
   rect.bottom = rect.top + rect.height;
 
   return rect;
-}
+};
