@@ -42,6 +42,12 @@ import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
 import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
 
+declare global {
+  interface Window {
+    __REACT_DEVTOOLS_GLOBAL_HOOK__: any;
+  }
+}
+
 const App: React.FC = () => {
   return (
     <AppContextProvider>
@@ -121,7 +127,17 @@ const IonicApp: React.FC<IonicAppProps> = ({
   }
 
   const handleMouseOver = (e: React.MouseEvent) => {
-    //window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole({id: 37, rendererID:1})T
+    if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
+
+    const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
+      e.target
+    );
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole(
+      {
+        id,
+        rendererID: 1,
+      }
+    );
     highlight(e.target);
   };
   return schedule.groups.length === 0 ? (
