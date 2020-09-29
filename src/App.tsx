@@ -213,37 +213,6 @@ const IonicApp: React.FC<IonicAppProps> = ({
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
-      <div className={styles.TabBar}>
-        <div
-          className={tabID === "components" ? styles.TabActive : styles.Tab}
-          onClick={() => setTabID("components")}
-        >
-          <span
-            className={styles.ReactIcon}
-            role="img"
-            aria-label="React Components tab button"
-          >
-            ⚛️
-          </span>
-          Components
-        </div>
-        <div
-          className={tabID === "profiler" ? styles.TabActive : styles.Tab}
-          onClick={() => setTabID("profiler")}
-        >
-          <span
-            className={styles.ReactIcon}
-            role="img"
-            aria-label="React Profiler tab button"
-          >
-            ⚛️
-          </span>
-          Profiler
-        </div>
-      </div>
-      <div className={styles.DevTools}>
-        <DevTools window={window} tabID={tabID} />
-      </div>
     </IonApp>
   );
 };
