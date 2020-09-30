@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Route } from "react-router-dom";
-import { IonApp, IonButton, IonRouterOutlet, IonSplitPane } from "@ionic/react";
+import "./App.css";
+import {
+  IonApp,
+  IonButton,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonRouterOutlet,
+  IonRow,
+  IonSplitPane,
+} from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 import Menu from "./components/Menu";
@@ -48,6 +58,7 @@ import { code } from "./util/code";
 // @ts-ignore
 import styles from "./devtools/devtoolsStyles.css";
 import { findByLabelText } from "@testing-library/react";
+import { relative } from "path";
 
 declare global {
   interface Window {
@@ -150,64 +161,60 @@ const IonicApp: React.FC<IonicAppProps> = ({
     );
   };
 
-  const defaultTabID = "components";
-
-  const [tabID, setTabID] = useState(defaultTabID);
-
   return schedule.groups.length === 0 ? (
     <div></div>
   ) : (
-    <IonApp
-      onMouseOver={(e) => highlight(e.target)}
-      onClick={handleClick}
-      className={`${darkMode ? "dark-theme" : ""}`}
-    >
-      <IonReactRouter>
-        <IonSplitPane contentId="main">
-          {
-            <div
-              style={{
-                maxBlockSize: 650,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <LiveProvider code={code}>
-                <LiveEditor />
-              </LiveProvider>
-            </div>
-          }{" "}
-          <Menu />
-          <IonRouterOutlet id="main">
-            {/*
+    <IonApp onClick={handleClick} className={`${darkMode ? "dark-theme" : ""}`}>
+      <IonContent>
+        <IonGrid className="main-grid">
+          {" "}
+          <IonRow>
+            <IonReactRouter>
+              <IonSplitPane
+                contentId="main"
+                onMouseOver={(e) => highlight(e.target)}
+              >
+                <Menu />
+                <IonRouterOutlet id="main">
+                  {/*
                 We use IonRoute here to keep the tabs state intact,
                 which makes transitions between tabs and non tab pages smooth
                 */}
-            <Route path="/tabs" render={() => <MainTabs />} />
-            <Route path="/account" component={Account} />
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-            <Route path="/support" component={Support} />
-            <Route path="/tutorial" component={Tutorial} />
-            <Route
-              path="/logout"
-              render={() => {
-                return (
-                  <RedirectToLogin
-                    setIsLoggedIn={setIsLoggedIn}
-                    setUsername={setUsername}
+                  <Route path="/tabs" render={() => <MainTabs />} />
+                  <Route path="/account" component={Account} />
+                  <Route path="/login" component={Login} />
+                  <Route path="/signup" component={Signup} />
+                  <Route path="/support" component={Support} />
+                  <Route path="/tutorial" component={Tutorial} />
+                  <Route
+                    path="/logout"
+                    render={() => {
+                      return (
+                        <RedirectToLogin
+                          setIsLoggedIn={setIsLoggedIn}
+                          setUsername={setUsername}
+                        />
+                      );
+                    }}
                   />
-                );
-              }}
-            />
-            <Route path="/" component={HomeOrTutorial} exact />
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
-      <div className={styles.TabBar}></div>
-      <div className={styles.DevTools}>
-        <DevTools window={window} tabID={tabID} />
-      </div>
+                  <Route path="/" component={HomeOrTutorial} exact />
+                </IonRouterOutlet>
+              </IonSplitPane>
+            </IonReactRouter>
+          </IonRow>
+          <IonRow className="bottom-row">
+            {" "}
+            <IonCol>
+              <LiveProvider code={code}>
+                <LiveEditor />
+              </LiveProvider>
+            </IonCol>
+            <IonCol>
+              <DevTools window={window} tabID="components" />
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+      </IonContent>
     </IonApp>
   );
 };
