@@ -28,7 +28,7 @@ export const yStyle = {
 };
 
 export const getOffset = (element: EventTarget) => {
-  const castedElement = <HTMLElement>element;
+  const castedElement = element as HTMLElement;
   const styles = getComputedStyle(castedElement);
 
   const margin = {
