@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Route } from "react-router-dom";
 import "./App.css";
 import {
   IonApp,
-  IonButton,
   IonCol,
   IonContent,
   IonGrid,
@@ -51,14 +50,11 @@ import HomeOrTutorial from "./components/HomeOrTutorial";
 import { Schedule } from "./models/Schedule";
 import RedirectToLogin from "./components/RedirectToLogin";
 import DevTools from "./devtools/devtools";
-import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
+import { LiveProvider, LiveEditor } from "react-live";
 
 import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
 import { code } from "./util/code";
 // @ts-ignore
-import styles from "./devtools/devtoolsStyles.css";
-import { findByLabelText } from "@testing-library/react";
-import { relative } from "path";
 
 declare global {
   interface Window {
