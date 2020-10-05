@@ -20,7 +20,7 @@ import {
 import { IonReactRouter } from "@ionic/react-router";
 import { code } from "./util/code";
 import React from "react";
-import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
+import { LiveProvider, LiveEditor, LiveError } from "react-live";
 import { Route } from "react-router";
 import "./App.css";
 import DevTools from "./devtools/devtools";
