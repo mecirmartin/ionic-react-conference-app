@@ -15,6 +15,7 @@ import {
   IonItemOption,
   IonItemOptions,
   IonItemSliding,
+  IonContent,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { code } from "./util/code";
@@ -80,89 +81,46 @@ const handleClick = (e: React.MouseEvent) => {
   window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(e.target);
 };
 
+const scope = {
+  IonPage,
+  IonContent,
+  IonApp,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonList,
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonToggle,
+  IonRadio,
+  IonCheckbox,
+  IonItemSliding,
+  IonItemOptions,
+  IonItemOption,
+  IonReactRouter,
+  IonRouterOutlet,
+  Route,
+  highlight,
+  handleClick,
+};
+
 const Home: React.FC = () => (
   <IonPage>
     <IonGrid className="main-grid">
-      <IonRow
-        onClick={(e) => handleClick(e)}
-        onMouseOver={(e) => highlight(e.target)}
-      >
-        <IonCol>
-          {/*-- List of Text Items --*/}
-          <IonList>
-            <IonItem>
-              <IonLabel>Pokémon Yellow</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Mega Man X</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>The Legend of Zelda</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Pac-Man</IonLabel>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Super Mario World</IonLabel>
-            </IonItem>
-          </IonList>
-        </IonCol>
-        <IonCol>
-          {/*-- List of Input Items --*/}
-          <IonList>
-            <IonItem>
-              <IonLabel>Input</IonLabel>
-              <IonInput></IonInput>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Toggle</IonLabel>
-              <IonToggle slot="end"></IonToggle>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Radio</IonLabel>
-              <IonRadio slot="end"></IonRadio>
-            </IonItem>
-            <IonItem>
-              <IonLabel>Checkbox</IonLabel>
-              <IonCheckbox slot="start" />
-            </IonItem>
-          </IonList>
-        </IonCol>
-        <IonCol>
-          {/*-- List of Sliding Items --*/}
-          <IonList>
-            <IonItemSliding>
-              <IonItem>
-                <IonLabel>Item</IonLabel>
-              </IonItem>
-              <IonItemOptions side="end">
-                <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-              </IonItemOptions>
-            </IonItemSliding>
-
-            <IonItemSliding>
-              <IonItem>
-                <IonLabel>Item</IonLabel>
-              </IonItem>
-              <IonItemOptions side="end">
-                <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-              </IonItemOptions>
-            </IonItemSliding>
-          </IonList>
-        </IonCol>
-      </IonRow>
-      <IonRow className="bottom-row">
-        {" "}
-        <IonCol>
-          <LiveProvider code={code}>
+      <LiveProvider code={code} scope={scope}>
+        <LivePreview />
+        <IonRow className="bottom-row">
+          {" "}
+          <IonCol>
             <LiveEditor />
             <LiveError />
-          </LiveProvider>
-        </IonCol>
-        <IonCol>
-          <DevTools window={window} tabID="components" />
-        </IonCol>
-      </IonRow>
+          </IonCol>
+          <IonCol>
+            <DevTools window={window} tabID="components" />
+          </IonCol>
+        </IonRow>
+      </LiveProvider>
     </IonGrid>
   </IonPage>
 );
