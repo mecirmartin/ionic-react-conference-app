@@ -113,7 +113,7 @@ const Home: React.FC = () => (
       <LiveProvider
         code={code}
         scope={scope}
-        /*  transformCode={(code) => {
+        transformCode={(code) => {
           const transformed = transformSync(code, {
             plugins: [
               require("@babel/plugin-syntax-jsx"),
@@ -124,9 +124,8 @@ const Home: React.FC = () => (
             ],
           })!.code;
           console.log(transformed);
-          return transformed || "";
+          return code;
         }}
- */
       >
         <LivePreview />
         <IonRow className="bottom-row">
