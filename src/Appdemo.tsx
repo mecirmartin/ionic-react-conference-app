@@ -22,6 +22,8 @@ import { code } from "./util/code";
 import React from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
+import { transformSync } from "@babel/core";
+
 import "./App.css";
 import DevTools from "./devtools/devtools";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
@@ -108,7 +110,24 @@ const scope = {
 const Home: React.FC = () => (
   <IonPage>
     <IonGrid className="main-grid">
-      <LiveProvider code={code} scope={scope}>
+      <LiveProvider
+        code={code}
+        scope={scope}
+        /*  transformCode={(code) => {
+          const transformed = transformSync(code, {
+            plugins: [
+              require("@babel/plugin-syntax-jsx"),
+              [
+                require("@babel/plugin-transform-react-jsx-source"),
+                { loose: true },
+              ],
+            ],
+          })!.code;
+          console.log(transformed);
+          return transformed || "";
+        }}
+ */
+      >
         <LivePreview />
         <IonRow className="bottom-row">
           {" "}
