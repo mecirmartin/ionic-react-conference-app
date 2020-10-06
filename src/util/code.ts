@@ -41,7 +41,7 @@ function main() {
     <IonContent>
       <IonGrid
         onMouseOver={(e) => {highlight(e.target);  onMouseHandler(e);}}
-        onClick={(e) => handleClick(e)}
+        onClick={(e) => {handleClick(e); cloneElement(e) }}
         className="ion-padding"
       >
         <IonRow>
