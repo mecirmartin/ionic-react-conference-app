@@ -1,9 +1,46 @@
+//@ts-ignore
+import jsx from 'acorn-jsx'
+import * as acorn from 'acorn'
+
+function onMouseHandler(e: any) {
+  console.log("event target type", e)
+  console.log("Target dir", e.target.outerHTML)
+  const stringCode = e.target.outerHTML
+  console.log("SringCode", stringCode, "Type", typeof (stringCode), "Target", e.target)
+  const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode)
+  //@ts-ignore
+  console.log("Parsed Target", parsedtarget)
+  // const parsedCode = acorn.Parser.extend(jsx()).parse(code)
+  // console.log("Parsed Code with Acorn", parsedCode)
+  return parsedtarget
+}
+
+
+const inputs = `
+              <IonItem>
+                <IonLabel>InputLabel</IonLabel>
+                <IonInput></IonInput>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Toggle</IonLabel>
+                <IonToggle slot="end"></IonToggle>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Radio</IonLabel>
+                <IonRadio slot="end"></IonRadio>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Checkbox</IonLabel>
+                <IonCheckbox slot="start" />
+              </IonItem>  
+`
+
 export const code = `
 function main() {
   const App = () => (
     <IonContent>
       <IonGrid
-        onMouseOver={(e) => highlight(e.target)}
+        onMouseOver={(e) => {highlight(e.target);  onMouseHandler(e);}}
         onClick={(e) => handleClick(e)}
         className="ion-padding"
       >
@@ -29,24 +66,8 @@ function main() {
             </IonList>
           </IonCol>
           <IonCol>
-            {/*-- List of Input Items --*/}
             <IonList>
-              <IonItem>
-                <IonLabel>Input</IonLabel>
-                <IonInput></IonInput>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Toggle</IonLabel>
-                <IonToggle slot="end"></IonToggle>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Radio</IonLabel>
-                <IonRadio slot="end"></IonRadio>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Checkbox</IonLabel>
-                <IonCheckbox slot="start" />
-              </IonItem>
+              
             </IonList>
           </IonCol>
           <IonCol>

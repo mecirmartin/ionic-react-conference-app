@@ -23,6 +23,11 @@ import React from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
+//@ts-ignore
+import jsx from 'acorn-jsx'
+import * as acorn from 'acorn'
+
+
 
 import "./App.css";
 import DevTools from "./devtools/devtools";
@@ -105,7 +110,21 @@ const scope = {
   Route,
   highlight,
   handleClick,
+  onMouseHandler
 };
+
+function onMouseHandler(e: any) {
+  console.log("event target type", e)
+  console.log("Target dir", e.target.outerHTML)
+  const stringCode = e.target.outerHTML
+  console.log("SringCode", stringCode, "Type", typeof (stringCode), "Target", e.target)
+  const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode)
+  //@ts-ignore
+  console.log("Parsed Target", parsedtarget)
+  // const parsedCode = acorn.Parser.extend(jsx()).parse(code)
+  // console.log("Parsed Code with Acorn", parsedCode)
+  return parsedtarget
+}
 
 const Home: React.FC = () => (
   <IonPage>
