@@ -86,6 +86,7 @@ const handleClick = (e: React.MouseEvent) => {
     rendererID: 1,
   });
   window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(e.target);
+
 };
 
 const scope = {
@@ -110,7 +111,8 @@ const scope = {
   Route,
   highlight,
   handleClick,
-  onMouseHandler
+  onMouseHandler,
+  cloneElement
 };
 
 function onMouseHandler(e: any) {
@@ -124,6 +126,13 @@ function onMouseHandler(e: any) {
   // const parsedCode = acorn.Parser.extend(jsx()).parse(code)
   // console.log("Parsed Code with Acorn", parsedCode)
   return parsedtarget
+}
+
+function cloneElement(e: any) {
+  let parent = e.target.parentNode
+  let clone = parent.cloneNode(true)
+  parent.after(clone)
+  console.log("Parent", parent)
 }
 
 const Home: React.FC = () => (
