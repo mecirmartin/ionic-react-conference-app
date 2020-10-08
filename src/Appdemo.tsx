@@ -24,13 +24,12 @@ import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
 //@ts-ignore
-import jsx from "acorn-jsx";
-import * as acorn from "acorn";
+/* import jsx from "acorn-jsx";
+import * as acorn from "acorn"; */
 
 import "./App.css";
 import DevTools from "./devtools/devtools";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
-import { stringify } from "querystring";
 
 const dom = {
   area: document.createElement("div"),
@@ -85,13 +84,15 @@ const Home: React.FC = () => {
 
   const handleClick = (e: any): void => {
     const searchString = `id='${e.target.id}'`;
-    const lines = code.split("\n");
-
-    const idIndex = lines.findIndex((line) => line.includes(searchString));
-    if (idIndex === -1 && !e.target.id) {
+    if (!e.target.id) {
       console.warn("This component has no id assigned to it");
       return;
     }
+
+    const lines = code.split("\n");
+
+    const idIndex = lines.findIndex((line) => line.includes(searchString));
+
     if (idIndex === -1 && e.target.id) {
       console.warn(`There is no component with id: ${searchString}`);
       return;
@@ -175,7 +176,7 @@ const Home: React.FC = () => {
         <LiveProvider
           code={code}
           scope={scope}
-          transformCode={(code) => {
+          /*           transformCode={(code) => {
             const transformed = transformSync(code, {
               plugins: [
                 require("@babel/plugin-syntax-jsx"),
@@ -186,7 +187,7 @@ const Home: React.FC = () => {
               ],
             })!.code;
             return code;
-          }}
+          }} */
         >
           <LivePreview />
           <IonRow className="bottom-row">
