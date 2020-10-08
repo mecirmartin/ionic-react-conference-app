@@ -123,13 +123,11 @@ const Home: React.FC = () => {
     }
     const newCode = lines.join("\n");
     setCode(newCode);
-    /*     const stringCode = e.target.outerHTML;
 
+    /*const stringCode = e.target.outerHTML;
     const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode);
 
-    if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
-
-    const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
+         const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
       e.target
     );
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole(
@@ -137,14 +135,13 @@ const Home: React.FC = () => {
         id,
         rendererID: 1,
       }
-    );
-    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.viewElementSource({
-      id,
-      rendererID: 1,
-    });
+    ); */
+
+    if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
+
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
       e.target
-    ); */
+    );
   };
 
   const scope = {
