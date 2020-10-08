@@ -18,20 +18,19 @@ import {
   IonContent,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import { code } from "./util/code";
-import React from "react";
+import { initialCode } from "./util/code";
+import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
 //@ts-ignore
-import jsx from 'acorn-jsx'
-import * as acorn from 'acorn'
-
-
+import jsx from "acorn-jsx";
+import * as acorn from "acorn";
 
 import "./App.css";
 import DevTools from "./devtools/devtools";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
+import { stringify } from "querystring";
 
 const dom = {
   area: document.createElement("div"),
@@ -74,102 +73,140 @@ function highlight(element: EventTarget) {
   });
   document.body.append(dom.y);
 }
+/* function cloneElement(e: any) {
+  let parent = e.target.parentNode;
+  let clone = parent.cloneNode(true);
+  parent.after(clone);
+  console.log("Parent", parent);
+} */
 
-const handleClick = (e: React.MouseEvent) => {
-  if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
+const Home: React.FC = () => {
+  const [code, setCode] = useState<string>(initialCode);
 
-  const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
-    e.target
-  );
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole({
-    id,
-    rendererID: 1,
-  });
-  window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(e.target);
+  const handleClick = (e: any): void => {
+    const searchString = `id='${e.target.id}'`;
+    const lines = code.split("\n");
 
-};
+    const idIndex = lines.findIndex((line) => line.includes(searchString));
+    if (idIndex === -1 && !e.target.id) {
+      console.warn("This component has no id assigned to it");
+      return;
+    }
+    if (idIndex === -1 && e.target.id) {
+      console.warn(`There is no component with id: ${searchString}`);
+      return;
+    }
 
-const scope = {
-  IonPage,
-  IonContent,
-  IonApp,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonToggle,
-  IonRadio,
-  IonCheckbox,
-  IonItemSliding,
-  IonItemOptions,
-  IonItemOption,
-  IonReactRouter,
-  IonRouterOutlet,
-  Route,
-  highlight,
-  handleClick,
-  onMouseHandler,
-  cloneElement
-};
+    if (e.target.childElementCount === 0) {
+      const lineToCopy = lines[idIndex];
+      lines.splice(idIndex, 0, lineToCopy);
+    } else {
+      const linesToCopy: Array<string> = [];
+      const tag = lines[idIndex].trim();
+      const tempIndex = tag.search(searchString);
+      const searchTag = tag.trim().slice(1, tempIndex).trim();
+      const endingTag = `</${searchTag}>`;
 
-function onMouseHandler(e: any) {
-  console.log("event target type", e)
-  console.log("Target dir", e.target.outerHTML)
-  const stringCode = e.target.outerHTML
-  console.log("SringCode", stringCode, "Type", typeof (stringCode), "Target", e.target)
-  const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode)
-  //@ts-ignore
-  console.log("Parsed Target", parsedtarget)
-  // const parsedCode = acorn.Parser.extend(jsx()).parse(code)
-  // console.log("Parsed Code with Acorn", parsedCode)
-  return parsedtarget
-}
+      let foundEndingTag = false;
+      let cloneIndex = idIndex;
+      for (let i = idIndex; i < lines.length; i++) {
+        linesToCopy.push(lines[i]);
+        cloneIndex++;
+        if (lines[i].trim() === endingTag) {
+          foundEndingTag = true;
+          break;
+        }
+      }
+      if (!foundEndingTag) throw new Error("Ending tag not found");
 
-function cloneElement(e: any) {
-  let parent = e.target.parentNode
-  let clone = parent.cloneNode(true)
-  parent.after(clone)
-  console.log("Parent", parent)
-}
+      lines.splice(cloneIndex, 0, ...linesToCopy);
+    }
+    const newCode = lines.join("\n");
+    setCode(newCode);
+    /*     const stringCode = e.target.outerHTML;
 
-const Home: React.FC = () => (
-  <IonPage>
-    <IonGrid className="main-grid">
-      <LiveProvider
-        code={code}
-        scope={scope}
-        transformCode={(code) => {
-          const transformed = transformSync(code, {
-            plugins: [
-              require("@babel/plugin-syntax-jsx"),
-              [
-                require("@babel/plugin-transform-react-jsx-source"),
-                { loose: true },
+    const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode);
+
+    if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
+
+    const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
+      e.target
+    );
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole(
+      {
+        id,
+        rendererID: 1,
+      }
+    );
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.viewElementSource({
+      id,
+      rendererID: 1,
+    });
+    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
+      e.target
+    ); */
+  };
+
+  const scope = {
+    IonPage,
+    IonContent,
+    IonApp,
+    IonGrid,
+    IonRow,
+    IonCol,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonInput,
+    IonToggle,
+    IonRadio,
+    IonCheckbox,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
+    IonReactRouter,
+    IonRouterOutlet,
+    Route,
+    highlight,
+    handleClick,
+    //cloneElement,
+  };
+
+  return (
+    <IonPage>
+      <IonGrid className="main-grid">
+        <LiveProvider
+          code={code}
+          scope={scope}
+          transformCode={(code) => {
+            const transformed = transformSync(code, {
+              plugins: [
+                require("@babel/plugin-syntax-jsx"),
+                [
+                  require("@babel/plugin-transform-react-jsx-source"),
+                  { loose: true },
+                ],
               ],
-            ],
-          })!.code;
-          console.log(transformed);
-          return code;
-        }}
-      >
-        <LivePreview />
-        <IonRow className="bottom-row">
-          {" "}
-          <IonCol>
-            <LiveEditor />
-            <LiveError />
-          </IonCol>
-          <IonCol>
-            <DevTools window={window} tabID="components" />
-          </IonCol>
-        </IonRow>
-      </LiveProvider>
-    </IonGrid>
-  </IonPage>
-);
+            })!.code;
+            return code;
+          }}
+        >
+          <LivePreview />
+          <IonRow className="bottom-row">
+            {" "}
+            <IonCol>
+              <LiveEditor />
+              <LiveError />
+            </IonCol>
+            <IonCol>
+              <DevTools window={window} tabID="components" />
+            </IonCol>
+          </IonRow>
+        </LiveProvider>
+      </IonGrid>
+    </IonPage>
+  );
+};
 
 const Appdemo: React.FC = () => (
   <IonApp>

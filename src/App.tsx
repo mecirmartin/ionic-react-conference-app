@@ -53,7 +53,7 @@ import DevTools from "./devtools/devtools";
 import { LiveProvider, LiveEditor } from "react-live";
 
 import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
-import { code } from "./util/code";
+import { initialCode } from "./util/code";
 // @ts-ignore
 
 declare global {
@@ -201,7 +201,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
-              <LiveProvider code={code}>
+              <LiveProvider code={initialCode}>
                 <LiveEditor />
               </LiveProvider>
             </IonCol>
