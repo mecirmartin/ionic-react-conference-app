@@ -22,7 +22,7 @@ import { initialCode } from "./util/code";
 import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
-import { transformSync } from "@babel/core";
+//import { transformSync } from "@babel/core";
 //@ts-ignore
 /* import jsx from "acorn-jsx";
 import * as acorn from "acorn"; */
