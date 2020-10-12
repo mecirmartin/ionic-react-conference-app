@@ -22,7 +22,7 @@ import { initialCode } from "./util/code";
 import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
-//import { transformSync } from "@babel/core";
+import { transformSync } from "@babel/core";
 //@ts-ignore
 /* import jsx from "acorn-jsx";
 import * as acorn from "acorn"; */
@@ -82,61 +82,63 @@ function highlight(element: EventTarget) {
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
 
+  const getLineNumbers = (id: string): { startTag: number; endTag: number } => {
+    let startTag = 0,
+      endTag = 0;
+    transformSync(code, {
+      filename: "code.ts",
+      plugins: [
+        function myCustomPlugin() {
+          return {
+            visitor: {
+              JSXElement(path: any) {
+                if (path.node.openingElement.name.name === "span") {
+                  if (
+                    path.node.openingElement.attributes[0].value.extra
+                      .rawValue === id
+                  ) {
+                    // -1 because array with lines of code will be 0 indexed
+                    startTag = path.node.children[0].loc.start.line - 1;
+                    endTag =
+                      path.node.children[path.node.children.length - 1].loc.end
+                        .line - 1;
+                  }
+                }
+              },
+            },
+          };
+        },
+        require("@babel/plugin-syntax-jsx"),
+        [require("@babel/plugin-transform-react-jsx-source"), { loose: true }],
+      ],
+    });
+    return {
+      startTag,
+      endTag,
+    };
+  };
+
   const handleClick = (e: any): void => {
-    const searchString = `id='${e.target.id}'`;
-    if (!e.target.id) {
-      console.warn("This component has no id assigned to it");
-      return;
+    const id = e.target.parentElement.getAttribute("data-source-begin");
+    const { startTag, endTag } = getLineNumbers(id);
+
+    if (!startTag && !endTag) return console.warn("Something went wrong");
+
+    const lineArray = code.split("\n");
+    const cloneLines: Array<string> = [];
+
+    for (let i = startTag; i <= endTag; i++) {
+      cloneLines.push(lineArray[i]);
     }
 
-    const lines = code.split("\n");
+    // Double check if we copied whole span
+    if (cloneLines[cloneLines.length - 1].trim() !== "</span>")
+      return console.warn("Something went wrong");
 
-    const idIndex = lines.findIndex((line) => line.includes(searchString));
+    lineArray.splice(endTag + 1, 0, ...cloneLines);
+    const newCode = lineArray.join("\n");
 
-    if (idIndex === -1 && e.target.id) {
-      console.warn(`There is no component with id: ${searchString}`);
-      return;
-    }
-
-    if (e.target.childElementCount === 0) {
-      const lineToCopy = lines[idIndex];
-      lines.splice(idIndex, 0, lineToCopy);
-    } else {
-      const linesToCopy: Array<string> = [];
-      const tag = lines[idIndex].trim();
-      const tempIndex = tag.search(searchString);
-      const searchTag = tag.trim().slice(1, tempIndex).trim();
-      const endingTag = `</${searchTag}>`;
-
-      let foundEndingTag = false;
-      let cloneIndex = idIndex;
-      for (let i = idIndex; i < lines.length; i++) {
-        linesToCopy.push(lines[i]);
-        cloneIndex++;
-        if (lines[i].trim() === endingTag) {
-          foundEndingTag = true;
-          break;
-        }
-      }
-      if (!foundEndingTag) throw new Error("Ending tag not found");
-
-      lines.splice(cloneIndex, 0, ...linesToCopy);
-    }
-    const newCode = lines.join("\n");
     setCode(newCode);
-
-    /*const stringCode = e.target.outerHTML;
-    const parsedtarget = acorn.Parser.extend(jsx()).parse(stringCode);
-
-         const id = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.getIDForNode(
-      e.target
-    );
-    window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.logElementToConsole(
-      {
-        id,
-        rendererID: 1,
-      }
-    ); */
 
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
 
@@ -167,28 +169,12 @@ const Home: React.FC = () => {
     Route,
     highlight,
     handleClick,
-    //cloneElement,
   };
 
   return (
     <IonPage>
       <IonGrid className="main-grid">
-        <LiveProvider
-          code={code}
-          scope={scope}
-          /*           transformCode={(code) => {
-            const transformed = transformSync(code, {
-              plugins: [
-                require("@babel/plugin-syntax-jsx"),
-                [
-                  require("@babel/plugin-transform-react-jsx-source"),
-                  { loose: true },
-                ],
-              ],
-            })!.code;
-            return code;
-          }} */
-        >
+        <LiveProvider code={code} scope={scope}>
           <LivePreview />
           <IonRow className="bottom-row">
             {" "}

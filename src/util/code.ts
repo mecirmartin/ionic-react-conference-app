@@ -9,23 +9,32 @@ function main() {
       >
         <IonRow >
           <IonCol>
-            {/*-- List of Text Items --*/}
             <IonList>
-              <IonItem>
-                <IonLabel id='1'>Pokémon Yellow</IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonLabel id='2'>Mega Man X</IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonLabel id='3'>The Legend of Zelda</IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonLabel id='4'>Pac-Man</IonLabel>
-              </IonItem>
-              <IonItem>
-                <IonLabel id='5'>Super Mario World</IonLabel>
-              </IonItem>
+              <span data-source-begin='1'>
+                <IonItem>
+                  <IonLabel>Pokemon Yellow</IonLabel>
+                </IonItem>
+              </span>
+              <span data-source-begin='2'>
+                <IonItem>
+                  <IonLabel>Mega Man X</IonLabel>
+                </IonItem>
+              </span>
+              <span data-source-begin='3'>
+                <IonItem>
+                  <IonLabel>The Legend of Zelda</IonLabel>
+                </IonItem>
+              </span>
+              <span data-source-begin='4'>
+                <IonItem>
+                  <IonLabel>Pac-Man</IonLabel>
+                </IonItem>
+              </span>
+              <span data-source-begin='5'>
+                <IonItem>
+                  <IonLabel>Super Mario World</IonLabel>
+                </IonItem>
+              </span>
             </IonList>
           </IonCol>
           <IonCol>
@@ -49,7 +58,6 @@ function main() {
             </IonList>
           </IonCol>
           <IonCol>
-            {/*-- List of Sliding Items --*/}
             <IonList>
               <IonItemSliding>
                 <IonItem>
