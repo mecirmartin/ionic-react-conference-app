@@ -23,6 +23,7 @@ import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
+import * as t from "@babel/types";
 //@ts-ignore
 /* import jsx from "acorn-jsx";
 import * as acorn from "acorn"; */
@@ -119,8 +120,8 @@ const Home: React.FC = () => {
   };
 
   const handleClick = (e: any): void => {
-    const id = e.target.parentElement.getAttribute("data-source-begin");
-    const { startTag, endTag } = getLineNumbers(id);
+    const data = e.target.parentElement.getAttribute("data-source-begin");
+    const { startTag, endTag } = getLineNumbers(data);
 
     if (!startTag && !endTag) return console.warn("Something went wrong");
 
@@ -174,7 +175,49 @@ const Home: React.FC = () => {
   return (
     <IonPage>
       <IonGrid className="main-grid">
-        <LiveProvider code={code} scope={scope}>
+        <LiveProvider
+          code={code}
+          scope={scope}
+          transformCode={(code) => {
+            const transformed = transformSync(code, {
+              filename: "code.ts",
+              plugins: [
+                require("@babel/plugin-syntax-jsx"),
+                [
+                  require("@babel/plugin-transform-react-jsx-source"),
+                  { loose: true },
+                ],
+                function myCustomPlugin() {
+                  return {
+                    visitor: {
+                      FunctionDeclaration(path: any) {
+                        console.log(path);
+                        path.insertAfter(
+                          t.expressionStatement(t.stringLiteral("</span>"))
+                        );
+                        // path.insertAfter(
+                        //   t.expressionStatement(
+                        //     t.stringLiteral("A little high, little low.")
+                        //   )
+                        // );
+                        // path.insertBefore(
+                        //   t.jsxOpeningElement(t.jsxIdentifier("<span>"), [
+                        //     t.jsxAttribute(
+                        //       t.jsxIdentifier("data-source-attribute"),
+                        //       t.stringLiteral("1")
+                        //     ),
+                        //   ])
+                        // );
+                      },
+                    },
+                  };
+                },
+              ],
+            });
+            console.log(transformed);
+            return code;
+          }}
+        >
           <LivePreview />
           <IonRow className="bottom-row">
             {" "}
