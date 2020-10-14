@@ -90,20 +90,33 @@ const Home: React.FC = () => {
       filename: "code.ts",
       plugins: [
         function myCustomPlugin() {
+          let idCount = 0;
           return {
             visitor: {
-              JSXElement(path: any) {
-                if (path.node.openingElement.name.name === "span") {
-                  if (
-                    path.node.openingElement.attributes[0].value.extra
-                      .rawValue === id
-                  ) {
-                    // -1 because array with lines of code will be 0 indexed
-                    startTag = path.node.children[0].loc.start.line - 1;
-                    endTag =
-                      path.node.children[path.node.children.length - 1].loc.end
-                        .line - 1;
+              JSXElement(path: any, state: any) {
+                console.log("JSXElement", path, state, t);
+                if (path.node.openingElement.name.name !== "span") {
+                  //TODO openingElement.attributes[data-...]
+                  const nestedProp = path.parent.openingElement || "";
+                  if (nestedProp === "span") {
+                    t.traverse(path.node, myCustomPlugin);
                   }
+                  const spanId = t.jsxIdentifier("span");
+
+                  path.replaceWith(
+                    t.jsxElement(
+                      t.jsxOpeningElement(spanId, [
+                        t.jsxAttribute(
+                          t.jsxIdentifier("data-source-begin"),
+                          t.stringLiteral(`${idCount++}`)
+                        ),
+                      ]),
+                      t.jsxClosingElement(spanId),
+                      [path.node]
+                    )
+                  );
+
+                  t.traverse(path.node, myCustomPlugin);
                 }
               },
             },
@@ -172,6 +185,44 @@ const Home: React.FC = () => {
     handleClick,
   };
 
+  const customPlugin = () => {
+    let idCount = 0;
+    return {
+      visitor: {
+        JSXElement(path: any, state: any) {
+          if (path.node.openingElement.name.name !== "span") {
+            //TODO openingElement.attributes[data-...]
+            const nestedProp =
+              (path.parent.openingElement &&
+                path.parent.openingElement.name.name) ||
+              "";
+            if (nestedProp === "span") {
+              if (!path.node.children.length) {
+                return path.skip();
+              }
+
+              return t.traverse(path.node.children[0], customPlugin);
+            }
+            const spanId = t.jsxIdentifier("span");
+
+            path.replaceWith(
+              t.jsxElement(
+                t.jsxOpeningElement(spanId, [
+                  t.jsxAttribute(
+                    t.jsxIdentifier("data-source-begin"),
+                    t.stringLiteral(`${idCount++}`)
+                  ),
+                ]),
+                t.jsxClosingElement(spanId),
+                [path.node]
+              )
+            );
+          }
+        },
+      },
+    };
+  };
+
   return (
     <IonPage>
       <IonGrid className="main-grid">
@@ -179,43 +230,14 @@ const Home: React.FC = () => {
           code={code}
           scope={scope}
           transformCode={(code) => {
-            const transformed = transformSync(code, {
+            const transformedCode = transformSync(code, {
               filename: "code.ts",
-              plugins: [
-                require("@babel/plugin-syntax-jsx"),
-                [
-                  require("@babel/plugin-transform-react-jsx-source"),
-                  { loose: true },
-                ],
-                function myCustomPlugin() {
-                  return {
-                    visitor: {
-                      FunctionDeclaration(path: any) {
-                        console.log(path);
-                        path.insertAfter(
-                          t.expressionStatement(t.stringLiteral("</span>"))
-                        );
-                        // path.insertAfter(
-                        //   t.expressionStatement(
-                        //     t.stringLiteral("A little high, little low.")
-                        //   )
-                        // );
-                        // path.insertBefore(
-                        //   t.jsxOpeningElement(t.jsxIdentifier("<span>"), [
-                        //     t.jsxAttribute(
-                        //       t.jsxIdentifier("data-source-attribute"),
-                        //       t.stringLiteral("1")
-                        //     ),
-                        //   ])
-                        // );
-                      },
-                    },
-                  };
-                },
-              ],
-            });
-            console.log(transformed);
-            return code;
+              plugins: [require("@babel/plugin-syntax-jsx"), customPlugin],
+            })!.code;
+            if (!transformedCode)
+              throw new Error("There was error during transpilation");
+            console.log(transformedCode);
+            return transformedCode;
           }}
         >
           <LivePreview />

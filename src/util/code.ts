@@ -10,35 +10,25 @@ function main() {
         <IonRow >
           <IonCol>
             <IonList>
-              <span data-source-begin='1'>
                 <IonItem>
                   <IonLabel>Pokemon Yellow</IonLabel>
                 </IonItem>
-              </span>
-              <span data-source-begin='2'>
                 <IonItem>
                   <IonLabel>Mega Man X</IonLabel>
                 </IonItem>
-              </span>
-              <span data-source-begin='3'>
                 <IonItem>
                   <IonLabel>The Legend of Zelda</IonLabel>
                 </IonItem>
-              </span>
-              <span data-source-begin='4'>
                 <IonItem>
                   <IonLabel>Pac-Man</IonLabel>
                 </IonItem>
-              </span>
-              <span data-source-begin='5'>
                 <IonItem>
                   <IonLabel>Super Mario World</IonLabel>
                 </IonItem>
-              </span>
             </IonList>
           </IonCol>
           <IonCol>
-            <IonList id='6'>
+            <IonList>
               <IonItem>
                 <IonLabel>InputLabel</IonLabel>
                 <IonInput></IonInput>
