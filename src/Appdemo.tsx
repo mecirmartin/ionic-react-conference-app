@@ -83,40 +83,29 @@ function highlight(element: EventTarget) {
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
 
-  const getLineNumbers = (id: string): { startTag: number; endTag: number } => {
+  const getLineNumbers = (
+    data: string
+  ): { startTag: number; endTag: number } => {
     let startTag = 0,
       endTag = 0;
     transformSync(code, {
       filename: "code.ts",
       plugins: [
         function myCustomPlugin() {
-          let idCount = 0;
           return {
             visitor: {
-              JSXElement(path: any, state: any) {
-                console.log("JSXElement", path, state, t);
-                if (path.node.openingElement.name.name !== "span") {
-                  //TODO openingElement.attributes[data-...]
-                  const nestedProp = path.parent.openingElement || "";
-                  if (nestedProp === "span") {
-                    t.traverse(path.node, myCustomPlugin);
+              JSXElement(path: any) {
+                if (path.node.openingElement.name.name === "span") {
+                  if (
+                    path.node.openingElement.attributes[0].value.extra
+                      .rawValue === data
+                  ) {
+                    // -1 because array with lines of code will be 0 indexed
+                    startTag = path.node.children[0].loc.start.line - 1;
+                    endTag =
+                      path.node.children[path.node.children.length - 1].loc.end
+                        .line - 1;
                   }
-                  const spanId = t.jsxIdentifier("span");
-
-                  path.replaceWith(
-                    t.jsxElement(
-                      t.jsxOpeningElement(spanId, [
-                        t.jsxAttribute(
-                          t.jsxIdentifier("data-source-begin"),
-                          t.stringLiteral(`${idCount++}`)
-                        ),
-                      ]),
-                      t.jsxClosingElement(spanId),
-                      [path.node]
-                    )
-                  );
-
-                  t.traverse(path.node, myCustomPlugin);
                 }
               },
             },
@@ -135,6 +124,7 @@ const Home: React.FC = () => {
   const handleClick = (e: any): void => {
     const data = e.target.parentElement.getAttribute("data-source-begin");
     const { startTag, endTag } = getLineNumbers(data);
+    console.log(startTag, endTag);
 
     if (!startTag && !endTag) return console.warn("Something went wrong");
 
@@ -189,9 +179,14 @@ const Home: React.FC = () => {
     let idCount = 0;
     return {
       visitor: {
-        JSXElement(path: any, state: any) {
-          if (path.node.openingElement.name.name !== "span") {
-            //TODO openingElement.attributes[data-...]
+        ReturnStatement(path: any) {
+          path.skip();
+        },
+        JSXElement(path: any) {
+          if (
+            path.node.openingElement.name.name !== "span" &&
+            path.node.openingElement.name.name !== "IonCol"
+          ) {
             const nestedProp =
               (path.parent.openingElement &&
                 path.parent.openingElement.name.name) ||
@@ -203,6 +198,21 @@ const Home: React.FC = () => {
 
               return t.traverse(path.node.children[0], customPlugin);
             }
+
+            const prop =
+              (path.parent.openingElement &&
+                path.parent.openingElement.name.name) ||
+              "";
+            let start = path.parent.loc.start.line;
+
+            if (prop !== "span") {
+              if (!path.node.children.length) {
+                start = path.node.openingElement.loc.start.line;
+              } else {
+                start = path.node.children[0].loc.start.line;
+              }
+            }
+
             const spanId = t.jsxIdentifier("span");
 
             path.replaceWith(
@@ -210,7 +220,7 @@ const Home: React.FC = () => {
                 t.jsxOpeningElement(spanId, [
                   t.jsxAttribute(
                     t.jsxIdentifier("data-source-begin"),
-                    t.stringLiteral(`${idCount++}`)
+                    t.stringLiteral(`${start}`)
                   ),
                 ]),
                 t.jsxClosingElement(spanId),
