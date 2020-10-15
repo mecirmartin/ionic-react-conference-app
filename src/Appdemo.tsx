@@ -73,77 +73,53 @@ function highlight(element: EventTarget) {
   });
   document.body.append(dom.y);
 }
-/* function cloneElement(e: any) {
-  let parent = e.target.parentNode;
-  let clone = parent.cloneNode(true);
-  parent.after(clone);
-  console.log("Parent", parent);
-} */
 
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
 
-  const getLineNumbers = (
-    data: string
-  ): { startTag: number; endTag: number } => {
-    let startTag = 0,
-      endTag = 0;
-    transformSync(code, {
-      filename: "code.ts",
-      plugins: [
-        function myCustomPlugin() {
-          return {
-            visitor: {
-              JSXElement(path: any) {
-                if (path.node.openingElement.name.name === "span") {
-                  if (
-                    path.node.openingElement.attributes[0].value.extra
-                      .rawValue === data
-                  ) {
-                    // -1 because array with lines of code will be 0 indexed
-                    startTag = path.node.children[0].loc.start.line - 1;
-                    endTag =
-                      path.node.children[path.node.children.length - 1].loc.end
-                        .line - 1;
-                  }
-                }
-              },
-            },
-          };
-        },
-        require("@babel/plugin-syntax-jsx"),
-        [require("@babel/plugin-transform-react-jsx-source"), { loose: true }],
-      ],
-    });
-    return {
-      startTag,
-      endTag,
-    };
+  const getLineNumbers = (e: any): { start: number; end: number } => {
+    // -1 because array is zero indexed
+    const start = e.target.parentElement.getAttribute("data-source-begin") - 1;
+    const end = e.target.parentElement.getAttribute("data-source-end") - 1;
+
+    return { start, end };
   };
 
-  const handleClick = (e: any): void => {
-    const data = e.target.parentElement.getAttribute("data-source-begin");
-    const { startTag, endTag } = getLineNumbers(data);
-    console.log(startTag, endTag);
+  const removeElement = (e: any): void => {
+    const { start, end } = getLineNumbers(e);
 
-    if (!startTag && !endTag) return console.warn("Something went wrong");
+    if (!start || !end)
+      return console.warn("Element was not found in the code");
+
+    const lineArray = code.split("\n");
+    const newCode = [
+      ...lineArray.slice(0, start),
+      ...lineArray.slice(end + 1),
+    ].join("\n");
+    setCode(newCode);
+  };
+
+  const cloneElement = (e: any): void => {
+    const { start, end } = getLineNumbers(e);
+
+    if (!start || !end)
+      return console.warn("Element was not found in the code");
 
     const lineArray = code.split("\n");
     const cloneLines: Array<string> = [];
 
-    for (let i = startTag; i <= endTag; i++) {
+    for (let i = start; i <= end; i++) {
       cloneLines.push(lineArray[i]);
     }
 
-    // Double check if we copied whole span
-    if (cloneLines[cloneLines.length - 1].trim() !== "</span>")
-      return console.warn("Something went wrong");
-
-    lineArray.splice(endTag + 1, 0, ...cloneLines);
+    lineArray.splice(end + 1, 0, ...cloneLines);
     const newCode = lineArray.join("\n");
 
     setCode(newCode);
+  };
 
+  const handleClick = (e: any): void => {
+    removeElement(e);
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
 
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
@@ -176,7 +152,6 @@ const Home: React.FC = () => {
   };
 
   const customPlugin = () => {
-    let idCount = 0;
     return {
       visitor: {
         ReturnStatement(path: any) {
@@ -199,18 +174,18 @@ const Home: React.FC = () => {
               return t.traverse(path.node.children[0], customPlugin);
             }
 
-            const prop =
-              (path.parent.openingElement &&
-                path.parent.openingElement.name.name) ||
-              "";
-            let start = path.parent.loc.start.line;
+            let start: number;
+            let end: number;
 
-            if (prop !== "span") {
-              if (!path.node.children.length) {
-                start = path.node.openingElement.loc.start.line;
-              } else {
-                start = path.node.children[0].loc.start.line;
-              }
+            if (!path.node.children.length) {
+              // Node has no children, it starts and ends on same line
+              start = path.node.openingElement.loc.start.line;
+              end = start;
+            } else {
+              // If node has multiple children, code starts at first childs, ends at last
+              start = path.node.children[0].loc.start.line;
+              end =
+                path.node.children[path.node.children.length - 1].loc.end.line;
             }
 
             const spanId = t.jsxIdentifier("span");
@@ -221,6 +196,10 @@ const Home: React.FC = () => {
                   t.jsxAttribute(
                     t.jsxIdentifier("data-source-begin"),
                     t.stringLiteral(`${start}`)
+                  ),
+                  t.jsxAttribute(
+                    t.jsxIdentifier("data-source-end"),
+                    t.stringLiteral(`${end}`)
                   ),
                 ]),
                 t.jsxClosingElement(spanId),
