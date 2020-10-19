@@ -16,6 +16,10 @@ import {
   IonItemOptions,
   IonItemSliding,
   IonContent,
+  IonSelect,
+  IonSelectOption,
+  IonButton,
+  IonTextarea,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { initialCode } from "./util/code";
@@ -23,14 +27,19 @@ import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
-import * as t from "@babel/types";
-//@ts-ignore
-/* import jsx from "acorn-jsx";
-import * as acorn from "acorn"; */
 
 import "./App.css";
 import DevTools from "./devtools/devtools";
+import customPlugin from "./util/babelCustomPlugin";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
+import {
+  buttonSnippet,
+  customCodeSnippet,
+  formSnippet,
+  inputAndLabelSnippet,
+  listItemSnippet,
+  listSnippet,
+} from "./util/codeSnippets";
 
 const dom = {
   area: document.createElement("div"),
@@ -76,6 +85,8 @@ function highlight(element: EventTarget) {
 
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
+  const [action, setAction] = useState<string>("clone");
+  const [customSnippet, setCustomSnippet] = useState<string>("");
 
   const getLineNumbers = (e: any): { start: number; end: number } => {
     // -1 because array is zero indexed
@@ -85,7 +96,7 @@ const Home: React.FC = () => {
     return { start, end };
   };
 
-  const removeElement = (e: any): void => {
+  const deleteElement = (e: any): void => {
     const { start, end } = getLineNumbers(e);
 
     if (!start || !end)
@@ -118,8 +129,54 @@ const Home: React.FC = () => {
     setCode(newCode);
   };
 
+  const addSnippet = (e: any, snipet: string): void => {
+    const { start, end } = getLineNumbers(e);
+
+    if (!snipet) return console.warn("No code snippet was provided");
+
+    if (!start || !end)
+      return console.warn("Element was not found in the code");
+
+    const lineArray = code.split("\n");
+
+    lineArray.splice(end + 1, 0, snipet);
+    const newCode = lineArray.join("\n");
+
+    setCode(newCode);
+  };
+
   const handleClick = (e: any): void => {
-    removeElement(e);
+    switch (action) {
+      case "CLONE":
+        cloneElement(e);
+        break;
+      case "DELETE":
+        deleteElement(e);
+        break;
+      case "BUTTON":
+        addSnippet(e, buttonSnippet);
+        break;
+      case "LIST":
+        addSnippet(e, listSnippet);
+        break;
+      case "LIST_ITEM":
+        addSnippet(e, listItemSnippet);
+        break;
+      case "INPUT_AND_LABEL":
+        addSnippet(e, inputAndLabelSnippet);
+        break;
+      case "FORM":
+        addSnippet(e, formSnippet);
+        break;
+      case "CUSTOM_SNIPPET":
+        addSnippet(e, customCodeSnippet);
+        setAction("");
+        break;
+
+      default:
+        return;
+    }
+
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
 
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
@@ -146,70 +203,14 @@ const Home: React.FC = () => {
     IonItemOption,
     IonReactRouter,
     IonRouterOutlet,
+    IonButton,
+    IonTextarea,
     Route,
     highlight,
     handleClick,
-  };
-
-  const customPlugin = () => {
-    return {
-      visitor: {
-        ReturnStatement(path: any) {
-          path.skip();
-        },
-        JSXElement(path: any) {
-          if (
-            path.node.openingElement.name.name !== "span" &&
-            path.node.openingElement.name.name !== "IonCol"
-          ) {
-            const nestedProp =
-              (path.parent.openingElement &&
-                path.parent.openingElement.name.name) ||
-              "";
-            if (nestedProp === "span") {
-              if (!path.node.children.length) {
-                return path.skip();
-              }
-
-              return t.traverse(path.node.children[0], customPlugin);
-            }
-
-            let start: number;
-            let end: number;
-
-            if (!path.node.children.length) {
-              // Node has no children, it starts and ends on same line
-              start = path.node.openingElement.loc.start.line;
-              end = start;
-            } else {
-              // If node has multiple children, code starts at first childs, ends at last
-              start = path.node.children[0].loc.start.line;
-              end =
-                path.node.children[path.node.children.length - 1].loc.end.line;
-            }
-
-            const spanId = t.jsxIdentifier("span");
-
-            path.replaceWith(
-              t.jsxElement(
-                t.jsxOpeningElement(spanId, [
-                  t.jsxAttribute(
-                    t.jsxIdentifier("data-source-begin"),
-                    t.stringLiteral(`${start}`)
-                  ),
-                  t.jsxAttribute(
-                    t.jsxIdentifier("data-source-end"),
-                    t.stringLiteral(`${end}`)
-                  ),
-                ]),
-                t.jsxClosingElement(spanId),
-                [path.node]
-              )
-            );
-          }
-        },
-      },
-    };
+    customSnippet,
+    setCustomSnippet,
+    addSnippet,
   };
 
   return (
@@ -225,11 +226,28 @@ const Home: React.FC = () => {
             })!.code;
             if (!transformedCode)
               throw new Error("There was error during transpilation");
-            console.log(transformedCode);
             return transformedCode;
           }}
         >
           <LivePreview />
+          <IonSelect
+            value={action}
+            placeholder="Select One"
+            onIonChange={(e) => setAction(e.detail.value)}
+          >
+            <IonSelectOption value="CLONE">Clone</IonSelectOption>
+            <IonSelectOption value="DELETE">Delete</IonSelectOption>
+            <IonSelectOption value="BUTTON">Add Button</IonSelectOption>
+            <IonSelectOption value="LIST">Add List</IonSelectOption>
+            <IonSelectOption value="LIST_ITEM">Add List Item</IonSelectOption>
+            <IonSelectOption value="INPUT_AND_LABEL">
+              Add Input with Label
+            </IonSelectOption>
+            <IonSelectOption value="FORM">Add Form</IonSelectOption>
+            <IonSelectOption value="CUSTOM_SNIPPET">
+              Add Element from code snippet
+            </IonSelectOption>
+          </IonSelect>
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
