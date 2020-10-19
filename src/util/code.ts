@@ -10,10 +10,10 @@ function main() {
       <IonGrid>
         <IonRow>
           <IonCol size='6'>
-            <IonItem>Welcome</IonItem>
+            <IonItem></IonItem>
           </IonCol>
           <IonCol size='6'>
-            <IonItem>Human</IonItem>
+            <IonItem></IonItem>
           </IonCol>
         </IonRow>
       </IonGrid>

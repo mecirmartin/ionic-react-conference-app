@@ -51,19 +51,27 @@ export const listItemSnippet = `
 
 export const inputAndLabelSnippet = `
 <IonItem>
-    <IonLabel>InputLabel</IonLabel>
-    <IonInput></IonInput>
+    <IonLabel position="stacked">Edit me!</IonLabel>
+    <IonInput placeholder=''> </IonInput>
 </IonItem>
 `;
 
 export const formSnippet = `
 <IonList>
     <IonItem>
-        <IonLabel position="stacked">Stacked Label</IonLabel>
-        <IonInput> </IonInput>
+        <IonLabel position="stacked">Name</IonLabel>
+        <IonInput placeholder='Enter your name'> </IonInput>
     </IonItem>
     <IonItem>
-        <IonButton>Edit me!</IonButton>
+        <IonLabel position="stacked">Age</IonLabel>
+        <IonInput placeholder='Enter your age' type='number'> </IonInput>
+    </IonItem>
+    <IonItem>
+        <IonLabel position="stacked">When do you want me to contact you?</IonLabel>
+        <IonInput type='date'> </IonInput>
+    </IonItem>
+    <IonItem>
+        <IonButton>Contact me!</IonButton>
     </IonItem>
 </IonList>
 `;

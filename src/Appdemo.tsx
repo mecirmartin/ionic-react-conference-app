@@ -38,7 +38,7 @@ import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
 import { IonReactRouter } from "@ionic/react-router";
 import { initialCode } from "./util/code";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
