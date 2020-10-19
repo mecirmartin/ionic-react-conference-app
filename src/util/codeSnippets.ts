@@ -5,9 +5,42 @@ export const buttonSnippet = `
 export const listSnippet = `
 <IonList>
     <IonItem>
-        <IonLabel>Edit me!</IonLabel>
+        <IonAvatar slot="start">
+            <img src="https://raw.githubusercontent.com/ionic-team/ionic-docs/master/src/demos/api/list/avatar-finn.png"/>
+        </IonAvatar>
+        <IonLabel>
+            <h2>Finn</h2>
+            <p>I'm a big deal</p>
+            <p>Listen, I've had a pretty messed up day...</p>
+        </IonLabel>
     </IonItem>
 </IonList>
+`;
+
+export const cardSnippet = `
+    <IonCard className="speaker-card">
+        <IonCardHeader>
+        <IonItem button detail={false} lines="none">
+            <IonAvatar slot="start">
+            <img src="https://icons.iconarchive.com/icons/sora-meliae/matrilineare/72/avatar-default-icon.png" alt="Speaker profile pic" />
+            </IonAvatar>
+            <IonLabel>
+                <h2>Meno</h2>
+                <p>Priezvisko</p>
+            </IonLabel>
+        </IonItem>
+        </IonCardHeader>
+
+        <IonCardContent>
+        <IonList lines="none">
+            <IonItem detail={false} >
+            <IonLabel>
+                <p>Hi, I'm Martin</p>
+            </IonLabel>
+            </IonItem>
+        </IonList>
+        </IonCardContent>
+    </IonCard>
 `;
 
 export const listItemSnippet = `
@@ -26,16 +59,8 @@ export const inputAndLabelSnippet = `
 export const formSnippet = `
 <IonList>
     <IonItem>
-        <IonLabel>Input1</IonLabel>
-        <IonInput></IonInput>
-    </IonItem>
-    <IonItem>
-        <IonLabel>Input2</IonLabel>
-        <IonInput></IonInput>
-    </IonItem>
-    <IonItem>
-        <IonLabel>Input3</IonLabel>
-        <IonInput></IonInput>
+        <IonLabel position="stacked">Stacked Label</IonLabel>
+        <IonInput> </IonInput>
     </IonItem>
     <IonItem>
         <IonButton>Edit me!</IonButton>

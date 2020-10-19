@@ -17,10 +17,25 @@ import {
   IonItemSliding,
   IonContent,
   IonSelect,
+  IonToolbar,
   IonSelectOption,
   IonButton,
   IonTextarea,
+  IonTitle,
+  IonCardHeader,
+  IonCardContent,
+  IonCard,
+  IonListHeader,
+  IonAvatar,
+  IonHeader,
 } from "@ionic/react";
+/* Core CSS required for Ionic components to work properly */
+import "@ionic/react/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+import "@ionic/react/css/normalize.css";
+import "@ionic/react/css/structure.css";
+import "@ionic/react/css/typography.css";
 import { IonReactRouter } from "@ionic/react-router";
 import { initialCode } from "./util/code";
 import React, { useState } from "react";
@@ -35,6 +50,7 @@ import customPlugin from "./util/babelCustomPlugin";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
 import {
   buttonSnippet,
+  cardSnippet,
   customCodeSnippet,
   formSnippet,
   inputAndLabelSnippet,
@@ -194,27 +210,38 @@ const Home: React.FC = () => {
     switch (action) {
       case "CLONE":
         cloneElement(e);
+        setAction("");
         break;
       case "DELETE":
         deleteElement(e);
+        setAction("");
         break;
       case "BUTTON":
         addSnippet(e, buttonSnippet);
+        setAction("");
         break;
       case "LIST":
         addSnippet(e, listSnippet);
+        setAction("");
         break;
       case "LIST_ITEM":
         addSnippet(e, listItemSnippet);
+        setAction("");
         break;
       case "INPUT_AND_LABEL":
         addSnippet(e, inputAndLabelSnippet);
+        setAction("");
         break;
       case "FORM":
         addSnippet(e, formSnippet);
+        setAction("");
         break;
       case "CUSTOM_SNIPPET":
         addSnippet(e, customCodeSnippet);
+        setAction("");
+        break;
+      case "CARD":
+        addSnippet(e, cardSnippet);
         setAction("");
         break;
 
@@ -281,6 +308,14 @@ const Home: React.FC = () => {
     IonRouterOutlet,
     IonButton,
     IonTextarea,
+    IonToolbar,
+    IonHeader,
+    IonTitle,
+    IonListHeader,
+    IonAvatar,
+    IonCardHeader,
+    IonCardContent,
+    IonCard,
     Route,
     highlight,
     handleClick,
@@ -329,6 +364,7 @@ const Home: React.FC = () => {
               Add Input with Label
             </IonSelectOption>
             <IonSelectOption value="FORM">Add Form</IonSelectOption>
+            <IonSelectOption value="CARD">Add Card</IonSelectOption>
             <IonSelectOption value="CUSTOM_SNIPPET">
               Add Element from code snippet
             </IonSelectOption>
