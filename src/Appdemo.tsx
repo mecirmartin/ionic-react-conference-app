@@ -109,6 +109,7 @@ const Home: React.FC = () => {
   const [elementForOperation, setElementForOperations] = useState()
   const [lines, setLines] = useState<any>()
 
+
   const getLineNumbers = (e: any): { start: number; end: number } => {
     // -1 because array is zero indexed
     const start = e.target.parentElement.getAttribute("data-source-begin") - 1;
@@ -143,6 +144,12 @@ const Home: React.FC = () => {
       ...lineArray.slice(end + 1),
     ].join("\n");
     setCode(newCode);
+    widthDimension = 0;
+    heightDimension = 0;
+    topDimension = 0;
+    leftDimension = 0;
+    console.log("DIMENSIONS", widthDimension, heightDimension, topDimension, leftDimension)
+
   }
 
   const clonning = () => {
@@ -161,6 +168,11 @@ const Home: React.FC = () => {
     const newCode = lineArray.join("\n");
 
     setCode(newCode);
+    widthDimension = 0;
+    heightDimension = 0;
+    topDimension = 0;
+    leftDimension = 0;
+    console.log("DIMENSIONS", widthDimension, heightDimension, topDimension, leftDimension)
   }
 
   const cloneElement = (e: any): void => {
@@ -203,10 +215,6 @@ const Home: React.FC = () => {
     let line1 = getLineNumbers(e)
     console.log(line1)
     setLines(line1)
-    if (action == null) {
-
-    }
-    console.log(lines)
     switch (action) {
       case "CLONE":
         cloneElement(e);
@@ -287,6 +295,31 @@ const Home: React.FC = () => {
 
   }
 
+  const addGreenClass = () => {
+    let ele = document.getElementById('buttonContainer')
+    if (ele == null) {
+      console.log("No element")
+    } else {
+      ele.style.border = "1px solid #54d77e"
+    }
+  }
+  const removeGreenClass = () => {
+    let ele = document.getElementById('buttonContainer')
+    if (ele == null) {
+      console.log("No element")
+    } else {
+      ele.style.border = "1px solid #4a87ee"
+    }
+  }
+
+  const addRedClass = () => {
+    let ele = document.getElementById('buttonContainer')
+    if (ele == null) {
+      console.log("No element")
+    } else {
+      ele.style.border = "1px solid #ef4e3a"
+    }
+  }
   const scope = {
     IonPage,
     IonContent,
@@ -345,8 +378,11 @@ const Home: React.FC = () => {
           <div id="buttonContainer" onClick={() => console.log("DIVKO")} className="ic-select-box ic-select-box-can-delete" style={{ width: widthDimension, height: heightDimension, top: 0, left: 0, transform: `translate3d(${topDimension}px, ${leftDimension}px, 0px)` }}>
             <div>
               <div className="control-container">
-                <a className="select-duplicate" href="#" onClick={(e) => { console.log("BEFORE CLONNING", elementForOperation); clonning() }}></a>
-                <a className="select-remove" href="#" onClick={(e) => { deleting() }}></a>
+                <a className="select-duplicate" href="#"
+                  onClick={(e) => { console.log("BEFORE CLONNING", elementForOperation); clonning() }}
+                  onMouseOver={() => addGreenClass()} onMouseOut={() => removeGreenClass()}></a>
+                <a className="select-remove" href="#" onClick={(e) => { deleting() }}
+                  onMouseOver={() => addRedClass()} onMouseOut={() => removeGreenClass()}></a>
               </div>
             </div>
           </div>
