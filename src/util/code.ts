@@ -1,73 +1,24 @@
 export const initialCode = `
 function main() {
   const App = () => (
-    <IonContent>
-      <IonGrid onMouseOver={(e) => highlight(e.target)} onClick={(e) => handleClick(e)} className="ion-padding">
-        <IonRow >
-          <IonCol>
-            <IonList>
-                <IonItem>
-                  <IonLabel>Pokemon Yellow</IonLabel>
-                </IonItem>
-                <IonItem>
-                  <IonLabel>Mega Man X</IonLabel>
-                </IonItem>
-                <IonItem>
-                  <IonLabel>The Legend of Zelda</IonLabel>
-                </IonItem>
-                <IonItem>
-                  <IonLabel>Pac-Man</IonLabel>
-                </IonItem>
-                <IonItem>
-                  <IonLabel>Super Mario World</IonLabel>
-                </IonItem>
-            </IonList>
+    <IonContent onMouseOver={(e) => highlight(e.target)} onClick={(e) => handleClick(e)} className="ion-padding">
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>Your new App</IonTitle>
+        </IonToolbar>
+      </IonHeader>
+      <IonGrid>
+        <IonRow>
+          <IonCol size='6'>
+            <IonItem>Welcome</IonItem>
           </IonCol>
-          <IonCol>
-            <IonList>
-              <IonItem>
-                <IonLabel>InputLabel</IonLabel>
-                <IonInput></IonInput>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Toggle</IonLabel>
-                <IonToggle slot="end"></IonToggle>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Radio</IonLabel>
-                <IonRadio slot="end"></IonRadio>
-              </IonItem>
-              <IonItem>
-                <IonLabel>Checkbox</IonLabel>
-                <IonCheckbox slot="start" />
-              </IonItem> 
-            </IonList>
-          </IonCol>
-          <IonCol>
-            <IonList>
-              <IonItemSliding>
-                <IonItem>
-                  <IonLabel>Item</IonLabel>
-                </IonItem>
-                <IonItemOptions side="end">
-                  <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-                </IonItemOptions>
-              </IonItemSliding>
-              <IonItemSliding>
-                <IonItem>
-                  <IonLabel>Item</IonLabel>
-                </IonItem>
-                <IonItemOptions side="end">
-                  <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-                </IonItemOptions>
-              </IonItemSliding>
-            </IonList>
+          <IonCol size='6'>
+            <IonItem>Human</IonItem>
           </IonCol>
         </IonRow>
       </IonGrid>
     </IonContent>
   );
-
   return (
     <IonApp>
       <IonReactRouter>
