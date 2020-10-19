@@ -2,7 +2,7 @@ export const initialCode = `
 function main() {
   const App = () => (
     <IonContent>
-      <IonGrid onMouseOver={(e) => highlight(e.target)} onClick={(e) => handleClick(e)} className="ion-padding">
+      <IonGrid onMouseOver={(e) => highlight(e.target)} onClick={(e) => {getDimensions(e);handleClick(e)}} className="ion-padding">
         <IonRow >
           <IonCol>
             <IonList>
