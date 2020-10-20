@@ -31,14 +31,14 @@ import {
 } from "@ionic/react";
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
-
 /* Basic CSS for apps built with Ionic */
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
+
 import { IonReactRouter } from "@ionic/react-router";
 import { initialCode } from "./util/code";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
@@ -100,19 +100,20 @@ function highlight(element: EventTarget) {
   document.body.append(dom.y);
 }
 
-
-
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
   const [action, setAction] = useState<string>("clone");
   const [customSnippet, setCustomSnippet] = useState<string>("");
-  const [elementForOperation, setElementForOperations] = useState()
-  const [lines, setLines] = useState<any>()
+  const [elementForOperation, setElementForOperations] = useState();
+  const [lines, setLines] = useState<any>();
 
   const getLineNumbers = (e: any): { start: number; end: number } => {
     // -1 because array is zero indexed
-    const start = e.target.parentElement.getAttribute("data-source-begin") - 1;
-    const end = e.target.parentElement.getAttribute("data-source-end") - 1;
+    const className = e.target.className;
+    const eChar = className.indexOf("E");
+
+    const start = parseInt(className.slice(1, eChar));
+    const end = parseInt(className.slice(eChar + 1));
 
     return { start, end };
   };
@@ -132,7 +133,7 @@ const Home: React.FC = () => {
   };
 
   const deleting = () => {
-    const { start, end } = lines
+    const { start, end } = lines;
 
     if (!start || !end)
       return console.warn("Element was not found in the code");
@@ -143,10 +144,10 @@ const Home: React.FC = () => {
       ...lineArray.slice(end + 1),
     ].join("\n");
     setCode(newCode);
-  }
+  };
 
   const clonning = () => {
-    let { start, end } = lines
+    let { start, end } = lines;
     if (!start || !end)
       return console.warn("Element was not found in the code");
 
@@ -161,7 +162,7 @@ const Home: React.FC = () => {
     const newCode = lineArray.join("\n");
 
     setCode(newCode);
-  }
+  };
 
   const cloneElement = (e: any): void => {
     const { start, end } = getLineNumbers(e);
@@ -199,14 +200,9 @@ const Home: React.FC = () => {
   };
 
   const handleClick = (e: any): void => {
-    console.log("EL", elementForOperation)
-    let line1 = getLineNumbers(e)
-    console.log(line1)
-    setLines(line1)
-    if (action == null) {
+    let line1 = getLineNumbers(e);
+    setLines(line1);
 
-    }
-    console.log(lines)
     switch (action) {
       case "CLONE":
         cloneElement(e);
@@ -256,36 +252,53 @@ const Home: React.FC = () => {
     );
   };
 
-  var widthDimension: number = 0, heightDimension: number = 0, topDimension: number = 0, leftDimension: number = 0;
+  var widthDimension: number = 0,
+    heightDimension: number = 0,
+    topDimension: number = 0,
+    leftDimension: number = 0;
   const getDimensions = (e: any) => {
     //@ts-ignore
-    widthDimension = parseInt(dom.area.style.width.slice(0, -2))
+    widthDimension = parseInt(dom.area.style.width.slice(0, -2));
     //@ts-ignore
-    heightDimension = parseInt(dom.area.style.height.slice(0, -2))
+    heightDimension = parseInt(dom.area.style.height.slice(0, -2));
     //@ts-ignore
-    topDimension = parseInt(dom.area.style.top.slice(0, -2))
+    topDimension = parseInt(dom.area.style.top.slice(0, -2));
     //@ts-ignore
-    leftDimension = parseInt(dom.area.style.left.slice(0, -2))
-    console.log('WIDTH', widthDimension, heightDimension, leftDimension, topDimension)
-    console.log("TYPE WIDTH", typeof (widthDimension))
+    leftDimension = parseInt(dom.area.style.left.slice(0, -2));
+    console.log(
+      "WIDTH",
+      widthDimension,
+      heightDimension,
+      leftDimension,
+      topDimension
+    );
+    console.log("TYPE WIDTH", typeof widthDimension);
     //@ts-ignore
-    document.getElementById('buttonContainer').style.width = `${widthDimension}px`;
+    document.getElementById(
+      "buttonContainer"
+    ).style.width = `${widthDimension}px`;
     //@ts-ignore
-    document.getElementById('buttonContainer').style.height = `${heightDimension}px`;
+    document.getElementById(
+      "buttonContainer"
+    ).style.height = `${heightDimension}px`;
     //@ts-ignore
-    document.getElementById('buttonContainer').style.transform = `translate3d(${leftDimension}px, ${topDimension}px, 0px)`;
+    document.getElementById(
+      "buttonContainer"
+    ).style.transform = `translate3d(${leftDimension}px, ${topDimension}px, 0px)`;
     //@ts-ignore
     //document.getElementById('buttonContainer').style.transform = `translate3d(8px, -460px,0px)`;
 
     //console.log('translate3d(10px, 275px, 0px)')
     //@ts-ignore
-    console.log("TRANSFORM STYLE", document.getElementById('buttonContainer').style)
+    console.log(
+      "TRANSFORM STYLE",
+      document.getElementById("buttonContainer")!.style
+    );
     setElementForOperations(e);
-    console.log("AFTER DIMENSIONS1", e)
+    console.log("AFTER DIMENSIONS1", e);
 
-    console.log("AFTER DIMENSIONS", elementForOperation)
-
-  }
+    console.log("AFTER DIMENSIONS", elementForOperation);
+  };
 
   const scope = {
     IonPage,
@@ -322,7 +335,7 @@ const Home: React.FC = () => {
     customSnippet,
     setCustomSnippet,
     addSnippet,
-    getDimensions
+    getDimensions,
   };
 
   return (
@@ -338,15 +351,40 @@ const Home: React.FC = () => {
             })!.code;
             if (!transformedCode)
               throw new Error("There was error during transpilation");
+            console.log(transformedCode);
             return transformedCode;
           }}
         >
           <LivePreview />
-          <div id="buttonContainer" onClick={() => console.log("DIVKO")} className="ic-select-box ic-select-box-can-delete" style={{ width: widthDimension, height: heightDimension, top: 0, left: 0, transform: `translate3d(${topDimension}px, ${leftDimension}px, 0px)` }}>
+          <div
+            id="buttonContainer"
+            onClick={() => console.log("DIVKO")}
+            className="ic-select-box ic-select-box-can-delete"
+            style={{
+              width: widthDimension,
+              height: heightDimension,
+              top: 0,
+              left: 0,
+              transform: `translate3d(${topDimension}px, ${leftDimension}px, 0px)`,
+            }}
+          >
             <div>
               <div className="control-container">
-                <a className="select-duplicate" href="#" onClick={(e) => { console.log("BEFORE CLONNING", elementForOperation); clonning() }}></a>
-                <a className="select-remove" href="#" onClick={(e) => { deleting() }}></a>
+                <a
+                  className="select-duplicate"
+                  href="#"
+                  onClick={(e) => {
+                    console.log("BEFORE CLONNING", elementForOperation);
+                    clonning();
+                  }}
+                ></a>
+                <a
+                  className="select-remove"
+                  href="#"
+                  onClick={(e) => {
+                    deleting();
+                  }}
+                ></a>
               </div>
             </div>
           </div>
