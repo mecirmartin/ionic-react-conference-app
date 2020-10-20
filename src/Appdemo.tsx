@@ -144,6 +144,17 @@ const Home: React.FC = () => {
       ...lineArray.slice(end + 1),
     ].join("\n");
     setCode(newCode);
+    widthDimension = 0;
+    heightDimension = 0;
+    topDimension = 0;
+    leftDimension = 0;
+    console.log(
+      "DIMENSIONS",
+      widthDimension,
+      heightDimension,
+      topDimension,
+      leftDimension
+    );
   };
 
   const clonning = () => {
@@ -162,6 +173,17 @@ const Home: React.FC = () => {
     const newCode = lineArray.join("\n");
 
     setCode(newCode);
+    widthDimension = 0;
+    heightDimension = 0;
+    topDimension = 0;
+    leftDimension = 0;
+    console.log(
+      "DIMENSIONS",
+      widthDimension,
+      heightDimension,
+      topDimension,
+      leftDimension
+    );
   };
 
   const cloneElement = (e: any): void => {
@@ -200,9 +222,10 @@ const Home: React.FC = () => {
   };
 
   const handleClick = (e: any): void => {
+    console.log("EL", elementForOperation);
     let line1 = getLineNumbers(e);
+    console.log(line1);
     setLines(line1);
-
     switch (action) {
       case "CLONE":
         cloneElement(e);
@@ -300,6 +323,31 @@ const Home: React.FC = () => {
     console.log("AFTER DIMENSIONS", elementForOperation);
   };
 
+  const addGreenClass = () => {
+    let ele = document.getElementById("buttonContainer");
+    if (ele == null) {
+      console.log("No element");
+    } else {
+      ele.style.border = "1px solid #54d77e";
+    }
+  };
+  const removeGreenClass = () => {
+    let ele = document.getElementById("buttonContainer");
+    if (ele == null) {
+      console.log("No element");
+    } else {
+      ele.style.border = "1px solid #4a87ee";
+    }
+  };
+
+  const addRedClass = () => {
+    let ele = document.getElementById("buttonContainer");
+    if (ele == null) {
+      console.log("No element");
+    } else {
+      ele.style.border = "1px solid #ef4e3a";
+    }
+  };
   const scope = {
     IonPage,
     IonContent,
@@ -377,6 +425,8 @@ const Home: React.FC = () => {
                     console.log("BEFORE CLONNING", elementForOperation);
                     clonning();
                   }}
+                  onMouseOver={() => addGreenClass()}
+                  onMouseOut={() => removeGreenClass()}
                 ></a>
                 <a
                   className="select-remove"
@@ -384,6 +434,8 @@ const Home: React.FC = () => {
                   onClick={(e) => {
                     deleting();
                   }}
+                  onMouseOver={() => addRedClass()}
+                  onMouseOut={() => removeGreenClass()}
                 ></a>
               </div>
             </div>

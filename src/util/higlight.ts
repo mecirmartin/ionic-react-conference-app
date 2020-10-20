@@ -1,6 +1,6 @@
 export const areaStyle = {
   position: "fixed",
-  backgroundColor: "rgba(0, 136, 204, 0.2)",
+  backgroundColor: "rgba(0, 136, 204, 0.1)",
   zIndex: "2147483647",
   pointerEvents: "none",
 };
