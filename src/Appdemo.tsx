@@ -108,12 +108,12 @@ const Home: React.FC = () => {
   const [lines, setLines] = useState<any>();
 
   const getLineNumbers = (e: any): { start: number; end: number } => {
-    // -1 because array is zero indexed
     const className = e.target.className;
     const eChar = className.indexOf("E");
 
-    const start = parseInt(className.slice(1, eChar));
-    const end = parseInt(className.slice(eChar + 1));
+    // -1 because array is zero indexed
+    const start = parseInt(className.slice(1, eChar)) - 1;
+    const end = parseInt(className.slice(eChar + 1)) - 1;
 
     return { start, end };
   };
@@ -222,10 +222,9 @@ const Home: React.FC = () => {
   };
 
   const handleClick = (e: any): void => {
-    console.log("EL", elementForOperation);
     let line1 = getLineNumbers(e);
-    console.log(line1);
     setLines(line1);
+
     switch (action) {
       case "CLONE":
         cloneElement(e);
@@ -399,14 +398,12 @@ const Home: React.FC = () => {
             })!.code;
             if (!transformedCode)
               throw new Error("There was error during transpilation");
-            console.log(transformedCode);
             return transformedCode;
           }}
         >
           <LivePreview />
           <div
             id="buttonContainer"
-            onClick={() => console.log("DIVKO")}
             className="ic-select-box ic-select-box-can-delete"
             style={{
               width: widthDimension,
@@ -422,7 +419,6 @@ const Home: React.FC = () => {
                   className="select-duplicate"
                   href="#"
                   onClick={(e) => {
-                    console.log("BEFORE CLONNING", elementForOperation);
                     clonning();
                   }}
                   onMouseOver={() => addGreenClass()}
