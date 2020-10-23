@@ -5,11 +5,7 @@ const customPlugin = () => {
     visitor: {
       Program(programPath: any, state: any) {
         // Get user configs
-        const {
-          customProperty = "className",
-          slashChar = "/",
-          dirLevel = 1,
-        } = state.opts;
+        const { customProperty = "className", slashChar = "/" } = state.opts;
         const filename = state.file.opts.filename;
 
         const splits = filename.split(slashChar);
@@ -19,11 +15,6 @@ const customPlugin = () => {
           );
           return;
         }
-
-        const dirNames = splits.slice(-1 - dirLevel, -1);
-
-        const fileName = splits[splits.length - 1].split(".")[0];
-        const fileIdentifier = `${dirNames.join("_")}_${fileName}`;
 
         programPath.traverse({
           JSXElement(jsxPath: any) {

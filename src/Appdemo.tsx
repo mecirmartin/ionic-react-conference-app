@@ -37,9 +37,9 @@ import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
 
 import { IonReactRouter } from "@ionic/react-router";
-import { initialCode } from "./util/code";
+import { initialCode } from "./util/code/code";
 import React, { useState } from "react";
-import { LiveProvider, LiveEditor, LiveError, LivePreview } from "react-live";
+import { LiveProvider, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
 import "./util/ionic.css";
@@ -56,7 +56,9 @@ import {
   inputAndLabelSnippet,
   listItemSnippet,
   listSnippet,
-} from "./util/codeSnippets";
+} from "./util/code/codeSnippets";
+import { changeFrameBorderStyle, getLineNumbers } from "./util/helperFunctions";
+import MyLiveEditor from "./editor/MyLiveEditor";
 
 const dom = {
   area: document.createElement("div"),
@@ -104,22 +106,15 @@ const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
   const [action, setAction] = useState<string>("clone");
   const [customSnippet, setCustomSnippet] = useState<string>("");
-  const [elementForOperation, setElementForOperations] = useState();
-  const [lines, setLines] = useState<any>();
+  let currentClassName: string = "",
+    widthDimension: number = 0,
+    heightDimension: number = 0,
+    topDimension: number = 0,
+    leftDimension: number = 0;
 
-  const getLineNumbers = (e: any): { start: number; end: number } => {
-    const className = e.target.className;
-    const eChar = className.indexOf("E");
-
-    // -1 because array is zero indexed
-    const start = parseInt(className.slice(1, eChar)) - 1;
-    const end = parseInt(className.slice(eChar + 1)) - 1;
-
-    return { start, end };
-  };
-
-  const deleteElement = (e: any): void => {
-    const { start, end } = getLineNumbers(e);
+  const deleteElement = (): void => {
+    const { start, end } = getLineNumbers(currentClassName);
+    console.log(start, end);
 
     if (!start || !end)
       return console.warn("Element was not found in the code");
@@ -132,62 +127,8 @@ const Home: React.FC = () => {
     setCode(newCode);
   };
 
-  const deleting = () => {
-    const { start, end } = lines;
-
-    if (!start || !end)
-      return console.warn("Element was not found in the code");
-
-    const lineArray = code.split("\n");
-    const newCode = [
-      ...lineArray.slice(0, start),
-      ...lineArray.slice(end + 1),
-    ].join("\n");
-    setCode(newCode);
-    widthDimension = 0;
-    heightDimension = 0;
-    topDimension = 0;
-    leftDimension = 0;
-    console.log(
-      "DIMENSIONS",
-      widthDimension,
-      heightDimension,
-      topDimension,
-      leftDimension
-    );
-  };
-
-  const clonning = () => {
-    let { start, end } = lines;
-    if (!start || !end)
-      return console.warn("Element was not found in the code");
-
-    const lineArray = code.split("\n");
-    const cloneLines: Array<string> = [];
-
-    for (let i = start; i <= end; i++) {
-      cloneLines.push(lineArray[i]);
-    }
-
-    lineArray.splice(end + 1, 0, ...cloneLines);
-    const newCode = lineArray.join("\n");
-
-    setCode(newCode);
-    widthDimension = 0;
-    heightDimension = 0;
-    topDimension = 0;
-    leftDimension = 0;
-    console.log(
-      "DIMENSIONS",
-      widthDimension,
-      heightDimension,
-      topDimension,
-      leftDimension
-    );
-  };
-
-  const cloneElement = (e: any): void => {
-    const { start, end } = getLineNumbers(e);
+  const cloneElement = (): void => {
+    const { start, end } = getLineNumbers(currentClassName);
 
     if (!start || !end)
       return console.warn("Element was not found in the code");
@@ -205,8 +146,8 @@ const Home: React.FC = () => {
     setCode(newCode);
   };
 
-  const addSnippet = (e: any, snipet: string): void => {
-    const { start, end } = getLineNumbers(e);
+  const addSnippet = (snipet: string): void => {
+    const { start, end } = getLineNumbers(currentClassName);
 
     if (!snipet) return console.warn("No code snippet was provided");
 
@@ -222,44 +163,34 @@ const Home: React.FC = () => {
   };
 
   const handleClick = (e: any): void => {
-    let line1 = getLineNumbers(e);
-    setLines(line1);
-
+    currentClassName = e.target.className;
     switch (action) {
-      case "CLONE":
-        cloneElement(e);
-        setAction("");
-        break;
-      case "DELETE":
-        deleteElement(e);
-        setAction("");
-        break;
       case "BUTTON":
-        addSnippet(e, buttonSnippet);
+        addSnippet(buttonSnippet);
         setAction("");
         break;
       case "LIST":
-        addSnippet(e, listSnippet);
+        addSnippet(listSnippet);
         setAction("");
         break;
       case "LIST_ITEM":
-        addSnippet(e, listItemSnippet);
+        addSnippet(listItemSnippet);
         setAction("");
         break;
       case "INPUT_AND_LABEL":
-        addSnippet(e, inputAndLabelSnippet);
+        addSnippet(inputAndLabelSnippet);
         setAction("");
         break;
       case "FORM":
-        addSnippet(e, formSnippet);
+        addSnippet(formSnippet);
         setAction("");
         break;
       case "CUSTOM_SNIPPET":
-        addSnippet(e, customCodeSnippet);
+        addSnippet(customCodeSnippet);
         setAction("");
         break;
       case "CARD":
-        addSnippet(e, cardSnippet);
+        addSnippet(cardSnippet);
         setAction("");
         break;
 
@@ -268,17 +199,12 @@ const Home: React.FC = () => {
     }
 
     if (!window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) return;
-
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent.selectNode(
       e.target
     );
   };
 
-  var widthDimension: number = 0,
-    heightDimension: number = 0,
-    topDimension: number = 0,
-    leftDimension: number = 0;
-  const getDimensions = (e: any) => {
+  const getDimensions = () => {
     //@ts-ignore
     widthDimension = parseInt(dom.area.style.width.slice(0, -2));
     //@ts-ignore
@@ -287,66 +213,13 @@ const Home: React.FC = () => {
     topDimension = parseInt(dom.area.style.top.slice(0, -2));
     //@ts-ignore
     leftDimension = parseInt(dom.area.style.left.slice(0, -2));
-    console.log(
-      "WIDTH",
-      widthDimension,
-      heightDimension,
-      leftDimension,
-      topDimension
-    );
-    console.log("TYPE WIDTH", typeof widthDimension);
-    //@ts-ignore
-    document.getElementById(
-      "buttonContainer"
-    ).style.width = `${widthDimension}px`;
-    //@ts-ignore
-    document.getElementById(
-      "buttonContainer"
-    ).style.height = `${heightDimension}px`;
-    //@ts-ignore
-    document.getElementById(
-      "buttonContainer"
-    ).style.transform = `translate3d(${leftDimension}px, ${topDimension}px, 0px)`;
-    //@ts-ignore
-    //document.getElementById('buttonContainer').style.transform = `translate3d(8px, -460px,0px)`;
 
-    //console.log('translate3d(10px, 275px, 0px)')
-    //@ts-ignore
-    console.log(
-      "TRANSFORM STYLE",
-      document.getElementById("buttonContainer")!.style
-    );
-    setElementForOperations(e);
-    console.log("AFTER DIMENSIONS1", e);
-
-    console.log("AFTER DIMENSIONS", elementForOperation);
+    const currentElement = document.getElementById("buttonContainer")!;
+    currentElement.style.width = `${widthDimension}px`;
+    currentElement.style.height = `${heightDimension}px`;
+    currentElement.style.transform = `translate3d(${leftDimension}px, ${topDimension}px, 0px)`;
   };
 
-  const addGreenClass = () => {
-    let ele = document.getElementById("buttonContainer");
-    if (ele == null) {
-      console.log("No element");
-    } else {
-      ele.style.border = "1px solid #54d77e";
-    }
-  };
-  const removeGreenClass = () => {
-    let ele = document.getElementById("buttonContainer");
-    if (ele == null) {
-      console.log("No element");
-    } else {
-      ele.style.border = "1px solid #4a87ee";
-    }
-  };
-
-  const addRedClass = () => {
-    let ele = document.getElementById("buttonContainer");
-    if (ele == null) {
-      console.log("No element");
-    } else {
-      ele.style.border = "1px solid #ef4e3a";
-    }
-  };
   const scope = {
     IonPage,
     IonContent,
@@ -418,20 +291,20 @@ const Home: React.FC = () => {
                 <a
                   className="select-duplicate"
                   href="#"
-                  onClick={(e) => {
-                    clonning();
-                  }}
-                  onMouseOver={() => addGreenClass()}
-                  onMouseOut={() => removeGreenClass()}
+                  onClick={cloneElement}
+                  onMouseOver={() =>
+                    changeFrameBorderStyle("1px solid #54d77e")
+                  }
+                  onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
                 ></a>
                 <a
                   className="select-remove"
                   href="#"
-                  onClick={(e) => {
-                    deleting();
-                  }}
-                  onMouseOver={() => addRedClass()}
-                  onMouseOut={() => removeGreenClass()}
+                  onClick={deleteElement}
+                  onMouseOver={() =>
+                    changeFrameBorderStyle("1px solid #ef4e3a")
+                  }
+                  onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
                 ></a>
               </div>
             </div>
@@ -441,8 +314,6 @@ const Home: React.FC = () => {
             placeholder="Select One"
             onIonChange={(e) => setAction(e.detail.value)}
           >
-            <IonSelectOption value="CLONE">Clone</IonSelectOption>
-            <IonSelectOption value="DELETE">Delete</IonSelectOption>
             <IonSelectOption value="BUTTON">Add Button</IonSelectOption>
             <IonSelectOption value="LIST">Add List</IonSelectOption>
             <IonSelectOption value="LIST_ITEM">Add List Item</IonSelectOption>
@@ -458,7 +329,7 @@ const Home: React.FC = () => {
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
-              <LiveEditor />
+              <MyLiveEditor />
               <LiveError />
             </IonCol>
             <IonCol>

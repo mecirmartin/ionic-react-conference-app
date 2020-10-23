@@ -53,7 +53,7 @@ import DevTools from "./devtools/devtools";
 import { LiveProvider, LiveEditor } from "react-live";
 
 import { areaStyle, getOffset, xStyle, yStyle } from "./util/higlight";
-import { initialCode } from "./util/code";
+import { initialCode } from "./util/code/code";
 // @ts-ignore
 
 declare global {
