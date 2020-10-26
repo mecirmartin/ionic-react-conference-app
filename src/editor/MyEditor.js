@@ -1,9 +1,9 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-
 import Highlight, { Prism } from "prism-react-renderer";
-
 import { ControlledEditor } from "@monaco-editor/react";
+
+import monacoSetup from "../editor/monacoSetup";
 
 class MyEditor extends Component {
   static propTypes = {
@@ -26,6 +26,10 @@ class MyEditor extends Component {
   state = {
     code: "",
   };
+
+  componentDidMount() {
+    monacoSetup();
+  }
 
   updateContent = (_, value) => {
     this.setState({ value }, () => {
