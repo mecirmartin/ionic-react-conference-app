@@ -1,53 +1,39 @@
+import React, { useState } from "react";
+import { LiveProvider, LiveError, LivePreview } from "react-live";
+import { Route } from "react-router";
+import { transformSync } from "@babel/core";
+// Ionic imports
+import * as ionic from "@ionic/react";
 import {
   IonCol,
   IonRow,
   IonGrid,
   IonApp,
-  IonItem,
-  IonLabel,
-  IonList,
   IonPage,
   IonRouterOutlet,
-  IonCheckbox,
-  IonInput,
-  IonRadio,
-  IonToggle,
-  IonItemOption,
-  IonItemOptions,
-  IonItemSliding,
-  IonContent,
   IonSelect,
-  IonToolbar,
   IonSelectOption,
-  IonButton,
-  IonTextarea,
-  IonTitle,
-  IonCardHeader,
-  IonCardContent,
-  IonCard,
-  IonListHeader,
-  IonAvatar,
-  IonHeader,
 } from "@ionic/react";
-/* Core CSS required for Ionic components to work properly */
+import { IonReactRouter } from "@ionic/react-router";
+// Ionic CSS imports
 import "@ionic/react/css/core.css";
-/* Basic CSS for apps built with Ionic */
 import "@ionic/react/css/normalize.css";
 import "@ionic/react/css/structure.css";
 import "@ionic/react/css/typography.css";
-
-import { IonReactRouter } from "@ionic/react-router";
-import { initialCode } from "./util/code/code";
-import React, { useState } from "react";
-import { LiveProvider, LiveError, LivePreview } from "react-live";
-import { Route } from "react-router";
-import { transformSync } from "@babel/core";
+// Local imports
 import "./util/ionic.css";
-
 import "./App.css";
 import DevTools from "./devtools/devtools";
 import customPlugin from "./util/babelCustomPlugin";
+import MyLiveEditor from "./editor/MyLiveEditor";
+import { initialCode } from "./util/code/code";
 import { areaStyle, xStyle, yStyle, getOffset } from "./util/higlight";
+import { changeFrameBorderStyle, getLineNumbers } from "./util/helperFunctions";
+import {
+  addSnippetToCode,
+  cloneElementInCode,
+  deleteElementInCode,
+} from "./util/codeHandlers";
 import {
   buttonSnippet,
   cardSnippet,
@@ -57,8 +43,6 @@ import {
   listItemSnippet,
   listSnippet,
 } from "./util/code/codeSnippets";
-import { changeFrameBorderStyle, getLineNumbers } from "./util/helperFunctions";
-import MyLiveEditor from "./editor/MyLiveEditor";
 
 const dom = {
   area: document.createElement("div"),
@@ -104,66 +88,50 @@ function highlight(element: EventTarget) {
 
 const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
+  const [focusedLine, setFocusedLine] = useState<number>(0);
   const [action, setAction] = useState<string>("clone");
   const [customSnippet, setCustomSnippet] = useState<string>("");
-  let currentClassName: string = "",
-    widthDimension: number = 0,
+  const [currentPositionInCode, setCurrentPositionInCode] = useState<{
+    start: number | null;
+    end: number | null;
+  }>({
+    start: null,
+    end: null,
+  });
+  let widthDimension: number = 0,
     heightDimension: number = 0,
     topDimension: number = 0,
     leftDimension: number = 0;
 
   const deleteElement = (): void => {
-    const { start, end } = getLineNumbers(currentClassName);
-    console.log(start, end);
-
-    if (!start || !end)
-      return console.warn("Element was not found in the code");
-
-    const lineArray = code.split("\n");
-    const newCode = [
-      ...lineArray.slice(0, start),
-      ...lineArray.slice(end + 1),
-    ].join("\n");
+    const { start, end } = currentPositionInCode;
+    const newCode = deleteElementInCode(code, start, end);
+    if (!newCode) return;
     setCode(newCode);
   };
 
   const cloneElement = (): void => {
-    const { start, end } = getLineNumbers(currentClassName);
-
-    if (!start || !end)
-      return console.warn("Element was not found in the code");
-
-    const lineArray = code.split("\n");
-    const cloneLines: Array<string> = [];
-
-    for (let i = start; i <= end; i++) {
-      cloneLines.push(lineArray[i]);
-    }
-
-    lineArray.splice(end + 1, 0, ...cloneLines);
-    const newCode = lineArray.join("\n");
-
+    const { start, end } = currentPositionInCode;
+    const newCode = cloneElementInCode(code, start, end);
+    if (!newCode) return;
     setCode(newCode);
   };
 
-  const addSnippet = (snipet: string): void => {
-    const { start, end } = getLineNumbers(currentClassName);
-
-    if (!snipet) return console.warn("No code snippet was provided");
-
-    if (!start || !end)
-      return console.warn("Element was not found in the code");
-
-    const lineArray = code.split("\n");
-
-    lineArray.splice(end + 1, 0, snipet);
-    const newCode = lineArray.join("\n");
-
+  const addSnippet = (snippet: string): void => {
+    const { end } = currentPositionInCode;
+    const newCode = addSnippetToCode(code, snippet, end);
+    if (!newCode) return;
     setCode(newCode);
+  };
+
+  const setCurrentlyFocusedLine = () => {
+    setFocusedLine(currentPositionInCode!.start || 0);
   };
 
   const handleClick = (e: any): void => {
-    currentClassName = e.target.className;
+    const { start, end } = getLineNumbers(e.target.className);
+    setCurrentPositionInCode({ start, end });
+
     switch (action) {
       case "BUTTON":
         addSnippet(buttonSnippet);
@@ -221,34 +189,8 @@ const Home: React.FC = () => {
   };
 
   const scope = {
-    IonPage,
-    IonContent,
-    IonApp,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonToggle,
-    IonRadio,
-    IonCheckbox,
-    IonItemSliding,
-    IonItemOptions,
-    IonItemOption,
+    ...ionic,
     IonReactRouter,
-    IonRouterOutlet,
-    IonButton,
-    IonTextarea,
-    IonToolbar,
-    IonHeader,
-    IonTitle,
-    IonListHeader,
-    IonAvatar,
-    IonCardHeader,
-    IonCardContent,
-    IonCard,
     Route,
     highlight,
     handleClick,
@@ -329,7 +271,7 @@ const Home: React.FC = () => {
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
-              <MyLiveEditor />
+              <MyLiveEditor currentLine={focusedLine} />
               <LiveError />
             </IonCol>
             <IonCol>

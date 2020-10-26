@@ -1,9 +1,6 @@
-export const buttonSnippet = `
-<IonButton>Edit me!</IonButton>
-`;
+export const buttonSnippet = `<IonButton>Edit me!</IonButton>`;
 
-export const listSnippet = `
-<IonList>
+export const listSnippet = `<IonList>
     <IonItem>
         <IonAvatar slot="start">
             <img src="https://raw.githubusercontent.com/ionic-team/ionic-docs/master/src/demos/api/list/avatar-finn.png"/>
@@ -14,11 +11,9 @@ export const listSnippet = `
             <p>Listen, I've had a pretty messed up day...</p>
         </IonLabel>
     </IonItem>
-</IonList>
-`;
+</IonList>`;
 
-export const cardSnippet = `
-    <IonCard className="speaker-card">
+export const cardSnippet = `<IonCard className="speaker-card">
         <IonCardHeader>
         <IonItem button detail={false} lines="none">
             <IonAvatar slot="start">
@@ -40,24 +35,18 @@ export const cardSnippet = `
             </IonItem>
         </IonList>
         </IonCardContent>
-    </IonCard>
-`;
+    </IonCard>`;
 
-export const listItemSnippet = `
-<IonItem>
+export const listItemSnippet = `<IonItem>
     <IonLabel>Edit me!</IonLabel>
-</IonItem>
-`;
+</IonItem>`;
 
-export const inputAndLabelSnippet = `
-<IonItem>
+export const inputAndLabelSnippet = `<IonItem>
     <IonLabel position="stacked">Edit me!</IonLabel>
     <IonInput placeholder=''> </IonInput>
-</IonItem>
-`;
+</IonItem>`;
 
-export const formSnippet = `
-<IonList>
+export const formSnippet = `<IonList>
     <IonItem>
         <IonLabel position="stacked">Name</IonLabel>
         <IonInput placeholder='Enter your name'> </IonInput>
@@ -73,13 +62,10 @@ export const formSnippet = `
     <IonItem>
         <IonButton>Contact me!</IonButton>
     </IonItem>
-</IonList>
-`;
+</IonList>`;
 
-export const customCodeSnippet = `
-<IonItem>
+export const customCodeSnippet = `<IonItem>
     <IonLabel position="floating">Insert code snippet: </IonLabel>
     <IonTextarea value={customSnippet} onIonChange={e => setCustomSnippet(e.detail.value)}></IonTextarea>
     <IonButton onClick={(e) => console.log(addSnippet(e,customSnippet))}>Add custom element</IonButton>
-</IonItem>
-`;
+</IonItem>`;

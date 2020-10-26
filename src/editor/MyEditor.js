@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { createRef, Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import Highlight, { Prism } from "prism-react-renderer";
 import { ControlledEditor } from "@monaco-editor/react";
@@ -6,6 +6,10 @@ import { ControlledEditor } from "@monaco-editor/react";
 import monacoSetup from "../editor/monacoSetup";
 
 class MyEditor extends Component {
+  constructor() {
+    super();
+    this.editorRef = createRef();
+  }
   static propTypes = {
     code: PropTypes.string,
     disabled: PropTypes.bool,
@@ -23,13 +27,33 @@ class MyEditor extends Component {
     return null;
   }
 
+  componentDidUpdate(prevProps) {
+    const start = this.props.currentLine;
+    const { code } = this.props.code;
+    if (code !== prevProps.code && this.editorRef.current) {
+      this.editorRef.current.trigger(
+        "anyString",
+        "editor.action.formatDocument"
+      );
+    }
+    if (start !== prevProps.currentLine.start && this.editorRef.current) {
+      if (start) {
+        this.editorRef.current.revealPositionInCenter({
+          lineNumber: start + 4,
+          column: 0,
+        });
+      }
+    }
+  }
+
   state = {
     code: "",
   };
 
-  componentDidMount() {
+  handleEditorDidMount = (_, editor) => {
     monacoSetup();
-  }
+    this.editorRef.current = editor;
+  };
 
   updateContent = (_, value) => {
     this.setState({ value }, () => {
@@ -64,7 +88,6 @@ class MyEditor extends Component {
 
   render() {
     // eslint-disable-next-line no-unused-vars
-    const { style, code: _code, onChange, language, theme } = this.props;
     const { code } = this.state;
 
     return (
@@ -72,6 +95,7 @@ class MyEditor extends Component {
         height="50vh"
         value={code}
         onChange={this.updateContent}
+        editorDidMount={this.handleEditorDidMount}
         language="javascript"
       />
     );
