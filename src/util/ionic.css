@@ -27,6 +27,14 @@
     background: url('https://creator.ionic.io/img/component-options-sprite.png') no-repeat transparent;
     width: 16px;
     height: 16px;
+    margin-right:2px;
+    background-size: 100%;
+  }
+
+  .ic-select-box .select-navigate {
+    background: url('https://creator.ionic.io/img/component-options-sprite.png') no-repeat transparent;
+    width: 16px;
+    height: 16px;
     background-size: 100%;
   }
   

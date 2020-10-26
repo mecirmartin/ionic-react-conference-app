@@ -1,6 +1,6 @@
 export const areaStyle = {
   position: "fixed",
-  backgroundColor: "rgba(0, 136, 204, 0.1)",
+  //backgroundColor: "rgba(0, 136, 204, 0.1)",
   zIndex: "2147483647",
   pointerEvents: "none",
 };
@@ -8,7 +8,7 @@ export const areaStyle = {
 export const xStyle = {
   position: "fixed",
   borderStyle: "dashed",
-  borderColor: "rgb(0, 136, 204)",
+  borderColor: "rgb(0, 136, 204, 0.5)",
   borderWidth: "1px 0",
   zIndex: "2147483647",
   left: "0",
@@ -19,7 +19,7 @@ export const xStyle = {
 export const yStyle = {
   position: "fixed",
   borderStyle: "dashed",
-  borderColor: "rgb(0, 136, 204)",
+  borderColor: "rgb(0, 136, 204, 0.5)",
   borderWidth: "0 1px",
   zIndex: "2147483647",
   top: "0",

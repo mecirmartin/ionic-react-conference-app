@@ -43,6 +43,7 @@ import {
   listItemSnippet,
   listSnippet,
 } from "./util/code/codeSnippets";
+import Border from "./elements/Border";
 
 const dom = {
   area: document.createElement("div"),
@@ -90,6 +91,7 @@ const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
   const [focusedLine, setFocusedLine] = useState<number>(0);
   const [action, setAction] = useState<string>("clone");
+  const [borderStyle, setBorderStyle] = useState<string>('1px solid #4a87ee')
   const [customSnippet, setCustomSnippet] = useState<string>("");
   const [currentPositionInCode, setCurrentPositionInCode] = useState<{
     start: number | null;
@@ -217,40 +219,17 @@ const Home: React.FC = () => {
           }}
         >
           <LivePreview />
-          <div
-            id="buttonContainer"
-            className="ic-select-box ic-select-box-can-delete"
-            style={{
-              width: widthDimension,
-              height: heightDimension,
-              top: 0,
-              left: 0,
-              transform: `translate3d(${topDimension}px, ${leftDimension}px, 0px)`,
-            }}
-          >
-            <div>
-              <div className="control-container">
-                <a
-                  className="select-duplicate"
-                  href="#"
-                  onClick={cloneElement}
-                  onMouseOver={() =>
-                    changeFrameBorderStyle("1px solid #54d77e")
-                  }
-                  onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
-                ></a>
-                <a
-                  className="select-remove"
-                  href="#"
-                  onClick={deleteElement}
-                  onMouseOver={() =>
-                    changeFrameBorderStyle("1px solid #ef4e3a")
-                  }
-                  onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
-                ></a>
-              </div>
-            </div>
-          </div>
+          <Border
+            setActive={() => { setCurrentlyFocusedLine() }}
+            greenBorder={() => { changeFrameBorderStyle("1px solid #54d77e"); setBorderStyle("1px solid #54d77e") }}
+            redBorder={() => { changeFrameBorderStyle("1px solid #ef4e3a"); setBorderStyle("1px solid #ef4e3a") }}
+            cloneElement={cloneElement}
+            deleteElement={deleteElement}
+            onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
+            widthDimension={widthDimension} topDimension={topDimension}
+            leftDimension={leftDimension} heightDimension={heightDimension}
+            borderStyle={borderStyle} />
+
           <IonSelect
             value={action}
             placeholder="Select One"
