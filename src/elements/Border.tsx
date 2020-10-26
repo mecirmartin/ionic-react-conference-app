@@ -48,7 +48,7 @@ const Border: React.FC<BorderProps> = ({ borderStyle, setActive, widthDimension,
                         onMouseOut={onMouseOut}
                     ></a>
                     <a
-                        className="select-navigate"
+                        className="select-duplicate"
                         href="#"
                         onClick={setActive}
                         onMouseOver={

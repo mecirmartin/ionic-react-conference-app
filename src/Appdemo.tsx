@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LiveProvider, LiveError, LivePreview } from "react-live";
 import { Route } from "react-router";
 import { transformSync } from "@babel/core";
@@ -13,6 +13,8 @@ import {
   IonRouterOutlet,
   IonSelect,
   IonSelectOption,
+  IonButton,
+  IonModal,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 // Ionic CSS imports
@@ -44,6 +46,7 @@ import {
   listSnippet,
 } from "./util/code/codeSnippets";
 import Border from "./elements/Border";
+//import { getFilesFromGitlab, loadFile } from './gitlab/gitlabFunctions'
 
 const dom = {
   area: document.createElement("div"),
@@ -93,6 +96,10 @@ const Home: React.FC = () => {
   const [action, setAction] = useState<string>("clone");
   const [borderStyle, setBorderStyle] = useState<string>('1px solid #4a87ee')
   const [customSnippet, setCustomSnippet] = useState<string>("");
+  const [files, setFiles] = useState<any>();
+  const [showModal, setShowModal] = useState(false);
+  const [gitlabCode, setGitlabcode] = useState<any>('')
+  const [fileName, setFileName] = useState<any>()
   const [currentPositionInCode, setCurrentPositionInCode] = useState<{
     start: number | null;
     end: number | null;
@@ -202,6 +209,60 @@ const Home: React.FC = () => {
     getDimensions,
   };
 
+  const loadFile = async () => {
+    const endpoint = `https://gitlab.com/api/v4/projects/21967675/repository/files/githubapi%2Fsrc%2Fcomponents%2F${fileName}?ref=master
+    `
+    await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        cache: 'no-store',
+        //Authorization: "Bearer token" 
+        //...(headers || window.endpointHeaders)
+      }
+    })
+      .then(res => {
+        var responseData;
+        console.log("res", res)
+        res.json().then(data => { console.log("GITHUBREPOSNE", data); let resData = atob(data.content); setGitlabcode(resData); })
+
+        console.log("RESPONSE", responseData)
+        //console.log("RESSSS", response)
+      })
+      .then(data => {
+
+      })
+
+  }
+
+  async function getFilesFromGitlab() {
+    const endpoint = 'https://gitlab.com/api/v4/projects/21967675/repository/tree?path=githubapi/src/components/'
+    await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        cache: 'no-store',
+        //Authorization: "Bearer token" 
+        //...(headers || window.endpointHeaders)
+      }
+    })
+      .then(res => {
+        var responseData;
+        res.json().then(data => { setFiles(data); console.log("DATATA", data) })
+        console.log("RESPONSE", responseData)
+        //console.log("RESSSS", response)
+      })
+  }
+
+
+
+  useEffect(() => {
+    function getData() {
+      getFilesFromGitlab()
+    }
+    getData()
+  }, [])
+
   return (
     <IonPage>
       <IonGrid className="main-grid">
@@ -247,6 +308,35 @@ const Home: React.FC = () => {
               Add Element from code snippet
             </IonSelectOption>
           </IonSelect>
+          <IonModal isOpen={showModal} cssClass='my-custom-class'>
+            <div>
+              <h2>
+                Pick which code from components message u want to pick
+          </h2>
+              <div>
+                <IonSelect
+                  value={fileName}
+                  placeholder="Select File"
+                  onIonChange={(e) => { console.log("FILENAME", e.detail.value); setFileName(e.detail.value); console.log("State filename", fileName) }}
+                >
+                  {files && files.map((file: any) => {
+                    return (
+                      <IonSelectOption value={file.name} key={file.id}>
+                        {file.name}
+                      </IonSelectOption>
+                    )
+                  })}
+                </IonSelect>
+              </div>
+            </div>
+            <IonButton onClick={(e) => { loadFile(); setShowModal(false); }}>Load File </IonButton>
+          </IonModal>
+          <IonButton title="Load Data from Gitlab" onClick={() => {
+            setShowModal(true)
+          }} >Load File From Gitlab</IonButton>
+          <IonButton onClick={() => {
+            setCode(gitlabCode)
+          }} >Load File to LiveProvider</IonButton>
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
