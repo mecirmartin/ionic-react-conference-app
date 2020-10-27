@@ -38,9 +38,15 @@ class MyEditor extends Component {
     }
     if (start !== prevProps.currentLine.start && this.editorRef.current) {
       if (start) {
-        this.editorRef.current.revealPositionInCenter({
-          lineNumber: start + 4,
-          column: 0,
+        const { current: editor } = this.editorRef;
+        editor.focus();
+        editor.revealLineInCenter(start + 4);
+        const startOfTheLine = editor
+          .getModel()
+          .getLineFirstNonWhitespaceColumn(start + 1);
+        editor.setPosition({
+          lineNumber: start + 1,
+          column: startOfTheLine,
         });
       }
     }

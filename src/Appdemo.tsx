@@ -94,12 +94,12 @@ const Home: React.FC = () => {
   const [code, setCode] = useState<string>(initialCode);
   const [focusedLine, setFocusedLine] = useState<number>(0);
   const [action, setAction] = useState<string>("clone");
-  const [borderStyle, setBorderStyle] = useState<string>('1px solid #4a87ee')
+  const [borderStyle, setBorderStyle] = useState<string>("1px solid #4a87ee");
   const [customSnippet, setCustomSnippet] = useState<string>("");
   const [files, setFiles] = useState<any>();
   const [showModal, setShowModal] = useState(false);
-  const [gitlabCode, setGitlabcode] = useState<any>('')
-  const [fileName, setFileName] = useState<any>()
+  const [gitlabCode, setGitlabcode] = useState<any>("");
+  const [fileName, setFileName] = useState<any>();
   const [currentPositionInCode, setCurrentPositionInCode] = useState<{
     start: number | null;
     end: number | null;
@@ -211,57 +211,48 @@ const Home: React.FC = () => {
 
   const loadFile = async () => {
     const endpoint = `https://gitlab.com/api/v4/projects/21967675/repository/files/githubapi%2Fsrc%2Fcomponents%2F${fileName}?ref=master
-    `
+    `;
     await fetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Accept': 'application/json',
-        cache: 'no-store',
-        //Authorization: "Bearer token" 
+        Accept: "application/json",
+        cache: "no-store",
+        //Authorization: "Bearer token"
         //...(headers || window.endpointHeaders)
-      }
+      },
     })
-      .then(res => {
-        var responseData;
-        console.log("res", res)
-        res.json().then(data => { console.log("GITHUBREPOSNE", data); let resData = atob(data.content); setGitlabcode(resData); })
-
-        console.log("RESPONSE", responseData)
-        //console.log("RESSSS", response)
+      .then((res) => {
+        res.json().then((data) => {
+          let resData = atob(data.content);
+          setGitlabcode(resData);
+        });
       })
-      .then(data => {
-
-      })
-
-  }
+      .then((data) => {});
+  };
 
   async function getFilesFromGitlab() {
-    const endpoint = 'https://gitlab.com/api/v4/projects/21967675/repository/tree?path=githubapi/src/components/'
+    const endpoint =
+      "https://gitlab.com/api/v4/projects/21967675/repository/tree?path=githubapi/src/components/";
     await fetch(endpoint, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Accept': 'application/json',
-        cache: 'no-store',
-        //Authorization: "Bearer token" 
+        Accept: "application/json",
+        cache: "no-store",
+        //Authorization: "Bearer token"
         //...(headers || window.endpointHeaders)
-      }
-    })
-      .then(res => {
-        var responseData;
-        res.json().then(data => { setFiles(data); console.log("DATATA", data) })
-        console.log("RESPONSE", responseData)
-        //console.log("RESSSS", response)
-      })
+      },
+    }).then((res) => {
+      var responseData;
+      res.json().then((data) => setFiles(data));
+    });
   }
-
-
 
   useEffect(() => {
     function getData() {
-      getFilesFromGitlab()
+      getFilesFromGitlab();
     }
-    getData()
-  }, [])
+    getData();
+  }, []);
 
   return (
     <IonPage>
@@ -281,15 +272,26 @@ const Home: React.FC = () => {
         >
           <LivePreview />
           <Border
-            setActive={() => { setCurrentlyFocusedLine() }}
-            greenBorder={() => { changeFrameBorderStyle("1px solid #54d77e"); setBorderStyle("1px solid #54d77e") }}
-            redBorder={() => { changeFrameBorderStyle("1px solid #ef4e3a"); setBorderStyle("1px solid #ef4e3a") }}
+            setActive={() => {
+              setCurrentlyFocusedLine();
+            }}
+            greenBorder={() => {
+              changeFrameBorderStyle("1px solid #54d77e");
+              setBorderStyle("1px solid #54d77e");
+            }}
+            redBorder={() => {
+              changeFrameBorderStyle("1px solid #ef4e3a");
+              setBorderStyle("1px solid #ef4e3a");
+            }}
             cloneElement={cloneElement}
             deleteElement={deleteElement}
             onMouseOut={() => changeFrameBorderStyle("1px solid #4a87ee")}
-            widthDimension={widthDimension} topDimension={topDimension}
-            leftDimension={leftDimension} heightDimension={heightDimension}
-            borderStyle={borderStyle} />
+            widthDimension={widthDimension}
+            topDimension={topDimension}
+            leftDimension={leftDimension}
+            heightDimension={heightDimension}
+            borderStyle={borderStyle}
+          />
 
           <IonSelect
             value={action}
@@ -308,35 +310,50 @@ const Home: React.FC = () => {
               Add Element from code snippet
             </IonSelectOption>
           </IonSelect>
-          <IonModal isOpen={showModal} cssClass='my-custom-class'>
+          <IonModal isOpen={showModal} cssClass="my-custom-class">
             <div>
-              <h2>
-                Pick which code from components message u want to pick
-          </h2>
+              <h2>Pick which code from components message u want to pick</h2>
               <div>
                 <IonSelect
                   value={fileName}
                   placeholder="Select File"
-                  onIonChange={(e) => { console.log("FILENAME", e.detail.value); setFileName(e.detail.value); console.log("State filename", fileName) }}
+                  onIonChange={(e) => setFileName(e.detail.value)}
                 >
-                  {files && files.map((file: any) => {
-                    return (
-                      <IonSelectOption value={file.name} key={file.id}>
-                        {file.name}
-                      </IonSelectOption>
-                    )
-                  })}
+                  {files &&
+                    files.map((file: any) => {
+                      return (
+                        <IonSelectOption value={file.name} key={file.id}>
+                          {file.name}
+                        </IonSelectOption>
+                      );
+                    })}
                 </IonSelect>
               </div>
             </div>
-            <IonButton onClick={(e) => { loadFile(); setShowModal(false); }}>Load File </IonButton>
+            <IonButton
+              onClick={(e) => {
+                loadFile();
+                setShowModal(false);
+              }}
+            >
+              Load File{" "}
+            </IonButton>
           </IonModal>
-          <IonButton title="Load Data from Gitlab" onClick={() => {
-            setShowModal(true)
-          }} >Load File From Gitlab</IonButton>
-          <IonButton onClick={() => {
-            setCode(gitlabCode)
-          }} >Load File to LiveProvider</IonButton>
+          <IonButton
+            title="Load Data from Gitlab"
+            onClick={() => {
+              setShowModal(true);
+            }}
+          >
+            Load File From Gitlab
+          </IonButton>
+          <IonButton
+            onClick={() => {
+              setCode(gitlabCode);
+            }}
+          >
+            Load File to LiveProvider
+          </IonButton>
           <IonRow className="bottom-row">
             {" "}
             <IonCol>
